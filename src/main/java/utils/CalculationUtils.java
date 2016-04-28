@@ -74,18 +74,26 @@ public class CalculationUtils {
 
     public static CalculationUtils F(CalculationUtils U, double t) {
         CalculationUtils res = new CalculationUtils(0, 0, 0, 0, 0, 0);
-        double G = 6.67 * Math.pow(10, -11);
-        double M = 5.9726 * Math.pow(10, 24);
-        List<Double> GeoPotential = GeoPot.calc(U.x, U.y, U.z, 4);
+//        double G = 6.67 * Math.pow(10, -11);
+//        double M = 5.9726 * Math.pow(10, 24);
+        double mu = 398600.4415E9;
+
         res.x = U.vx;
         res.y = U.vy;
         res.z = U.vz;
+
 //        Простейшее приближение F = fm/r
 //        res.vx = -G * M * U.x / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
 //        res.vy = -G * M * U.y / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
 //        res.vz = -G * M * U.z / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
 
+////        Это считает точнее
+//        res.vx = -mu * U.x / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
+//        res.vy = -mu * U.y / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
+//        res.vz = -mu * U.z / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
+
 //        Приближение по Чазову
+        List<Double> GeoPotential = GeoPot.calc(U.x, U.y, U.z, 4);
         res.vx = GeoPotential.get(0);
         res.vy = GeoPotential.get(1);
         res.vz = GeoPotential.get(2);
@@ -125,27 +133,6 @@ public class CalculationUtils {
             String text = String.valueOf(U.x) + "\t\t\t" + String.valueOf(U.y) + "\t\t\t" + String.valueOf(U.z) + "\t\t\t" + String.valueOf(U.vx) + "\t\t\t" + String.valueOf(U.vy) + "\t\t\t" + String.valueOf(U.vz) + "\n";
             write(fileName.getName(), text);
         }
-
-//        double tFull = 2 * 3.15 * Math.sqrt(xM * xM + yM * yM + zM * zM) / Math.sqrt(VxM * VxM + VyM * VyM + VzM * VzM);
-//        System.out.println(tMaxM);
-//        System.out.println(tFull);
-//        while (tM <= tFull) {
-//            k1 = mult(F(U, tM), dtM);
-//            k2 = mult(F(sum(U, mult(0.5, k1)), tM + 0.5 * dtM), dtM);
-//            k3 = mult(F(sum(U, mult(0.5, k2)), tM + 0.5 * dtM), dtM);
-//            k4 = mult(F(sum(U, k3), tM + dtM), dtM);
-//            U = sum(U, mult(1.0 / 6.0, sum(sum(k1, mult(2, k2)), sum(mult(2, k3), k4))));
-//            tM += dtM;
-//            xList.add(U.x);
-//            yList.add(U.y);
-//            zList.add(U.z);
-//            vxList.add(U.vx);
-//            vyList.add(U.vy);
-//            vzList.add(U.vz);
-//
-//            String text = String.valueOf(U.x) + "\t\t\t" + String.valueOf(U.y) + "\t\t\t" + String.valueOf(U.z) + "\n";
-//            write(fileNameFull.getName(), text);
-//        }
 
         resList.add(xList);
         resList.add(yList);

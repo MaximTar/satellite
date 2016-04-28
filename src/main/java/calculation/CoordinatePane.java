@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import main.java.utils.CalculationUtils;
 import main.java.utils.NumberUtils;
+import main.java.utils.WritingUtils;
 
 import java.io.*;
 
@@ -23,20 +24,29 @@ public class CoordinatePane extends GridPane {
 
     private Scene resultScene;
 
+//    private TextField t0Input = new TextField("0");
+//    private TextField dtInput = new TextField("1000");
+//    private TextField tMaxInput = new TextField("86500");
+//    private TextField Vx0Input = new TextField("3100.0");
+//    private TextField Vy0Input = new TextField("0.0");
+//    private TextField Vz0Input = new TextField("0.0");
+//    private TextField x0Input = new TextField("0.0");
+//    private TextField y0Input = new TextField("4.2E7");
+//    private TextField z0Input = new TextField("0.0");
     private TextField t0Input = new TextField("0");
     private TextField dtInput = new TextField("1000");
     private TextField tMaxInput = new TextField("86500");
-    private TextField Vx0Input = new TextField("3100.0");
-    private TextField Vy0Input = new TextField("0.0");
-    private TextField Vz0Input = new TextField("0.0");
-    private TextField x0Input = new TextField("0.0");
-    private TextField y0Input = new TextField("4.2E7");
+    private TextField Vx0Input = new TextField("-883.923");
+    private TextField Vy0Input = new TextField("317.338");
+    private TextField Vz0Input = new TextField("7610.832");
+    private TextField x0Input = new TextField("-2290301.063");
+    private TextField y0Input = new TextField("-6379471.940");
     private TextField z0Input = new TextField("0.0");
 
     public CoordinatePane(Stage mainWindow) {
-        this.setPadding(new Insets(15, 15, 15, 15));
-        this.setVgap(15);
-        this.setHgap(8);
+        setPadding(new Insets(15, 15, 15, 15));
+        setVgap(15);
+        setHgap(8);
 
         Label t0Label = new Label("t0:");
         Label dtLabel = new Label("dt:");
@@ -48,12 +58,12 @@ public class CoordinatePane extends GridPane {
         Label y0Label = new Label("y0:");
         Label z0Label = new Label("z0:");
 
-        this.addRow(0, t0Label, t0Input, vx0Label, Vx0Input, x0Label, x0Input);
-        this.addRow(1, dtLabel, dtInput, vy0Label, Vy0Input, y0Label, y0Input);
-        this.addRow(2, tMaxLabel, tMaxInput, vz0Label, Vz0Input, z0Label, z0Input);
+        addRow(0, t0Label, t0Input, vx0Label, Vx0Input, x0Label, x0Input);
+        addRow(1, dtLabel, dtInput, vy0Label, Vy0Input, y0Label, y0Input);
+        addRow(2, tMaxLabel, tMaxInput, vz0Label, Vz0Input, z0Label, z0Input);
 
         Button startButton = new Button("Start");
-        this.add(startButton, 0, 3, 6, 1);
+        add(startButton, 0, 3, 6, 1);
         setHalignment(startButton, HPos.CENTER);
 
         startButton.setOnAction(event -> {
@@ -61,9 +71,10 @@ public class CoordinatePane extends GridPane {
                     x0Input, y0Input, z0Input)) {
                 //defining the axes
                 final NumberAxis xAxis = new NumberAxis();
-                final NumberAxis yAxis = new NumberAxis();
-                xAxis.setLabel("X");
-                yAxis.setLabel("Y");
+//                final NumberAxis yAxis = new NumberAxis();
+                final NumberAxis yAxis = new NumberAxis(-29475000, -29365000, 5000);
+                xAxis.setLabel("N");
+                yAxis.setLabel("Energy");
                 //creating the chart
                 final LineChart<Number, Number> lineChart = new
                         LineChart<>(xAxis, yAxis);
@@ -86,10 +97,12 @@ public class CoordinatePane extends GridPane {
                 List<Double> vz = result.get(5);
                 double G = 6.67 * Math.pow(10, -11);
                 double M = 5.9726 * Math.pow(10, 24);
+                double mu = 398600.4415E9;
                 for (int i = 0; i < x.size(); i++) {
 //                        series.getData().add(new XYChart.Data(x.get(i), y.get(i)));
                     series.getData().add(new XYChart.Data(i, (Math.pow(vx.get(i), 2) + Math.pow(vy.get(i), 2) + Math.pow(vz.get(i), 2)) / 2 -
-                            (G * M / (x.get(i) * x.get(i) + y.get(i) * y.get(i) + z.get(i) * z.get(i))) * Math.sqrt(x.get(i) * x.get(i) + y.get(i) * y.get(i) + z.get(i) * z.get(i))));
+                            (mu / (x.get(i) * x.get(i) + y.get(i) * y.get(i) + z.get(i) * z.get(i))) * Math.sqrt(x.get(i) * x.get(i) + y.get(i) * y.get(i) + z.get(i) * z.get(i))));
+//                    series.getData().add(new XYChart.Data(i, Math.sqrt(vx.get(i) * vx.get(i) + vy.get(i) * vy.get(i) + vz.get(i) * vz.get(i))));
                 }
                 List resultAngles = Kepler.convertToKepler(NumberUtils.parseTextAsDouble(x0Input),
                         NumberUtils.parseTextAsDouble(y0Input), NumberUtils.parseTextAsDouble(z0Input),
@@ -97,18 +110,18 @@ public class CoordinatePane extends GridPane {
                         NumberUtils.parseTextAsDouble(Vz0Input));
                 String spacing = "\t\t\t";
                 String elements = String.join(spacing, resultAngles.toString());
-                write(CalculationUtils.fileName.getName(), elements);
+                WritingUtils.write(CalculationUtils.fileName.getName(), elements);
                 series.setName("Energy");
                 lineChart.getData().add(series);
                 lineChart.setCreateSymbols(false);
-                resultScene = new Scene(lineChart, 800, 600);
+                resultScene = new Scene(lineChart, 1600, 600);
                 mainWindow.setScene(resultScene);
                 mainWindow.show();
             }
         });
 
         Button conversionToKeplerButton = new Button("Conversion");
-        this.add(conversionToKeplerButton, 0, 4, 6, 1);
+        add(conversionToKeplerButton, 0, 4, 6, 1);
         setHalignment(conversionToKeplerButton, HPos.CENTER);
 
 
@@ -128,14 +141,6 @@ public class CoordinatePane extends GridPane {
             mainWindow.setScene(startKeplerScene);
             mainWindow.show();
         });
-    }
-
-    public static void write(String fileName, String text) {
-        try (FileWriter writer = new FileWriter(fileName, true)) {
-            writer.write(text);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
     }
 
     public TextField getVx0Input() {

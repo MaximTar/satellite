@@ -7,24 +7,25 @@ import java.util.Collections;
 public class Kepler {
     public static ArrayList convertToCoordinate(double omega, double i, double w, double p, double e, double tau) {
 
+//        final double MU = 4.0362e14;
+        final double MU = 398600.4415E9;
+
         double Om = Math.toRadians(omega);
         double I = Math.toRadians(i);
         double W = Math.toRadians(w);
-//        double mu = 4.0362e14;
-        double mu = 398600.4415E9;
-        double C = Math.sqrt(p * mu);
+        double C = Math.sqrt(p * MU);
         double a = p / (1 - e * e);
 //        System.out.println('a');
 //        System.out.println(a);
-        double T = 2 * Math.PI * Math.sqrt(a * a * a / mu);
+        double T = 2 * Math.PI * Math.sqrt(a * a * a / MU);
 //        System.out.println('T');
 //        System.out.println(T);
 //        double b = p / Math.sqrt(1 - e * e);
-        double n = Math.sqrt(mu / (a * a * a));
+        double n = Math.sqrt(MU / (a * a * a));
         double M = n * (0 - tau);
         double E = kpSolvekepler(M, e, 1E-10);
         double v = 2 * Math.atan((Math.tan(E / 2)) / (Math.sqrt((1 - e) / (1 + e))));
-//        double f = e * mu;
+//        double f = e * MU;
         double u = v + W;
         double r = p / (1 + e * Math.cos(v));
 
@@ -63,36 +64,48 @@ public class Kepler {
 
     public static ArrayList convertToKepler(double x, double y, double z, double vx, double vy, double vz) {
 
-//        double mu = 4.0362e14;
-        double mu = 398600.4415E9;
+//        final double MU = 4.0362e14;
+        final double MU = 398600.4415E9;
 //        double r = NumberUtils.round(Math.sqrt(x * x + y * y + z * z), 6);
 //        double c1 = NumberUtils.round(y * vz - vy * z, 6);
 //        double c2 = NumberUtils.round(z * vx - vz * x, 6);
 //        double c3 = NumberUtils.round(x * vy - vx * y, 6);
 //        double c = NumberUtils.round(Math.sqrt(c1 * c1 + c2 * c2 + c3 * c3), 6);
-//        double f1 = NumberUtils.round((-mu * x / r - vz * c2 + vy * c3), 6);
-//        double f2 = NumberUtils.round((-mu * y / r - vx * c3 + vz * c1), 6);
-//        double f3 = NumberUtils.round((-mu * z / r - vy * c1 + vx * c2), 6);
+//        double f1 = NumberUtils.round((-MU * x / r - vz * c2 + vy * c3), 6);
+//        double f2 = NumberUtils.round((-MU * y / r - vx * c3 + vz * c1), 6);
+//        double f3 = NumberUtils.round((-MU * z / r - vy * c1 + vx * c2), 6);
 //        double f = NumberUtils.round(Math.sqrt(f1 * f1 + f2 * f2 + f3 * f3), 6);
-//        double p = NumberUtils.round(c * c / mu, 6);
-//        double e = NumberUtils.round(f / mu, 6);
+//        double p = NumberUtils.round(c * c / MU, 6);
+//        double e = NumberUtils.round(f / MU, 6);
         double r = Math.sqrt(x * x + y * y + z * z);
+//        System.out.println('r');
+//        System.out.println(r);
+//        System.out.println(Math.hypot(Math.hypot(x, y), z));
         double c1 = y * vz - vy * z;
         double c2 = z * vx - vz * x;
         double c3 = x * vy - vx * y;
         double c = Math.sqrt(c1 * c1 + c2 * c2 + c3 * c3);
-        double f1 = (-mu * x / r - vz * c2 + vy * c3);
-        double f2 = (-mu * y / r - vx * c3 + vz * c1);
-        double f3 = (-mu * z / r - vy * c1 + vx * c2);
+//        System.out.println('c');
+//        System.out.println(c);
+//        System.out.println(Math.hypot(Math.hypot(c1, c2), c3));
+        double f1 = (-MU * x / r - vz * c2 + vy * c3);
+//        System.out.println(f1);
+        double f2 = (-MU * y / r - vx * c3 + vz * c1);
+//        System.out.println(f2);
+        double f3 = (-MU * z / r - vy * c1 + vx * c2);
+//        System.out.println(f3);
         double f = Math.sqrt(f1 * f1 + f2 * f2 + f3 * f3);
-        double p = c * c / mu;
-        double e = f / mu;
+//        System.out.println('f');
+//        System.out.println(f);
+//        System.out.println(Math.hypot(Math.hypot(f1, f2), f3));
+        double p = c * c / MU;
+        double e = f / MU;
         if (Double.isNaN(e)) {
             e = 0;
         }
 
         double a = p / (1 - e * e);
-        double T = 2 * Math.PI * Math.sqrt(a * a * a / mu);
+        double T = 2 * Math.PI * Math.sqrt(a * a * a / MU);
 //        System.out.println('T');
 //        System.out.println(T);
 //        System.out.println('a');
@@ -136,7 +149,7 @@ public class Kepler {
 //        double tau = NumberUtils.round((-p * p / c) * NumberUtils.round(integral(100000, 0, v, e), 4), 4);
 //        double E1 = 2 * Math.atan(Math.sqrt((1 - e) / (1 + e)) * Math.tan(v / 2));
 //        double a = p / (1 - e * e);
-//        double n = Math.sqrt(mu) / Math.pow(a, 3. / 2);
+//        double n = Math.sqrt(MU) / Math.pow(a, 3. / 2);
 //        double diff = (E1 - e * Math.sin(E1)) / n;
         double tau = (-p * p / c) * integral(100000, 0, v, e);
         if (Double.isNaN(tau)) {

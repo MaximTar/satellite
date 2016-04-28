@@ -251,9 +251,9 @@ public class GeoPot {
         double rGeoFM = rs * EarthGravity;
         double rGeoR0 = rs * EarthEquatorialRadius;
 
-        double[] RL = new double[degree + 2];
-        double[] PL = new double[degree + 2];
-        double[] UL = new double[degree + 2];
+        double[] RL = new double[degree + 3];
+        double[] PL = new double[degree + 3];
+        double[] UL = new double[degree + 3];
 
         RL[1] = rGeoFM * rGeoR0;
         RL[2] = rGeoR0 * RL[1];
@@ -338,7 +338,7 @@ public class GeoPot {
                     s = stes[nhcs];
                 }
 
-                // [C + Snm]*(1 - z ^ 2 / r ^ 2) ^ (m / 2) *[cos + sin](m * lambda)
+                // [C + Snm]*(1 - z ^ 2 / r ^ 2) ^ (m / 2) * [cos + sin](m * lambda)
                 GeoPot W = sum(mult((c * xax + s * yax), DX), mult((c * xay + s * yay), DY));
 
                 egECEF = sum(sum(egECEF, mult(mult(U, PL[n]), (c * xam + s * yam))), sum(mult(mult(RL[n], V), (c * xam + s * yam)), mult(RL[n] * PL[n], W))); // current n, m force
@@ -361,6 +361,6 @@ public class GeoPot {
         return this.x + " " + this.y + " " + this.z;
     }
 
-    public static void main(String[] args) {
-    }
+//    public static void main(String[] args) {
+//    }
 }

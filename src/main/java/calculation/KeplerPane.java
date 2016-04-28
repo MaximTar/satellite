@@ -32,9 +32,9 @@ public class KeplerPane extends GridPane {
     private TextField tauInput = new TextField("0.0");
 
     public KeplerPane(Stage mainWindow) {
-        this.setPadding(new Insets(15, 15, 15, 15));
-        this.setVgap(15);
-        this.setHgap(8);
+        setPadding(new Insets(15, 15, 15, 15));
+        setVgap(15);
+        setHgap(8);
 
         Label kt0Label = new Label("t0:");
         Label kdtLabel = new Label("dt:");
@@ -46,12 +46,12 @@ public class KeplerPane extends GridPane {
         Label eLabel = new Label("e:");
         Label tauLabel = new Label("tau:");
 
-        this.addRow(0, kt0Label, Kt0Input, omegaLabel, OmegaInput, pLabel, pInput);
-        this.addRow(1, kdtLabel, KdtInput, iLabel, iInput, eLabel, eInput);
-        this.addRow(2, ktMaxLabel, KtMaxInput, wLabel, wInput, tauLabel, tauInput);
+        addRow(0, kt0Label, Kt0Input, omegaLabel, OmegaInput, pLabel, pInput);
+        addRow(1, kdtLabel, KdtInput, iLabel, iInput, eLabel, eInput);
+        addRow(2, ktMaxLabel, KtMaxInput, wLabel, wInput, tauLabel, tauInput);
 
         Button startButton = new Button("Start");
-        this.add(startButton, 0, 3, 6, 1);
+        add(startButton, 0, 3, 6, 1);
         setHalignment(startButton, HPos.CENTER);
 
         startButton.setOnAction(event -> {
@@ -101,7 +101,7 @@ public class KeplerPane extends GridPane {
         });
 
         Button conversionToCoordinatesButton = new Button("Conversion");
-        this.add(conversionToCoordinatesButton, 0, 4, 6, 1);
+        add(conversionToCoordinatesButton, 0, 4, 6, 1);
         setHalignment(conversionToCoordinatesButton, HPos.CENTER);
 
 

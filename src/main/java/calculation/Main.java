@@ -1,15 +1,30 @@
 package main.java.calculation;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Point3D;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.shape.Cylinder;
 import javafx.stage.Stage;
+import main.java.utils.CalculationUtils;
 import main.java.utils.GeoPot;
+import main.java.utils.NumberUtils;
+import main.java.utils.WritingUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 
 public class Main extends Application {
@@ -58,89 +73,7 @@ public class Main extends Application {
         mainWindow.setResizable(false);
         mainWindow.setScene(startScene);
         mainWindow.show();
-        System.out.println("yz");
-        for (int i = 1; i < 13; i++) {
-            System.out.println(GeoPot.calc(-881845.9876811067, -645.8580656032427, 6724268.359905096, i));
-        }
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 1));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 2));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 3));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 4));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 5));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 6));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 7));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 8));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 9));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 10));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 11));
-//        System.out.println(GeoPot.calc(1213.6498524653434, 42200279.15273564, 0.0, 12));
-//        System.out.println("xz");
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 1));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 2));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 3));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 4));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 5));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 6));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 7));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 8));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 9));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 10));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 11));
-//        System.out.println(GeoPot.calc(10000000, 0, 10000000, 12));
-//        System.out.println("xy");
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 1));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 2));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 3));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 4));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 5));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 6));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 7));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 8));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 9));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 10));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 11));
-//        System.out.println(GeoPot.calc(10000000, 10000000, 0, 12));
-//        System.out.println("z");
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 1));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 2));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 3));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 4));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 5));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 6));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 7));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 8));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 9));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 10));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 11));
-//        System.out.println(GeoPot.calc(0, 0, 10000000, 12));
-//        System.out.println("y");
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 1));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 2));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 3));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 4));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 5));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 6));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 7));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 8));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 9));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 10));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 11));
-//        System.out.println(GeoPot.calc(0, 10000000, 0, 12));
-//        System.out.println("x");
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 1));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 2));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 3));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 4));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 5));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 6));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 7));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 8));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 9));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 10));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 11));
-//        System.out.println(GeoPot.calc(10000000, 0, 0, 12));
     }
-
 
     public static void main(String[] args) {
         launch(args);

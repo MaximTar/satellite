@@ -8,18 +8,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -145,20 +140,47 @@ public class Main extends Application {
     }
 
     private void buildAxes() {
-        final PhongMaterial whiteMaterial = new PhongMaterial();
-        whiteMaterial.setDiffuseColor(Color.WHITE);
-        whiteMaterial.setSpecularColor(Color.WHITE);
+        Material redMaterial = new Material(Color.RED);
+        Material greenMaterial = new Material(Color.GREEN);
+        Material blueMaterial = new Material(Color.BLUE);
 
         final Box xAxis = new Box(37240.0, 100, 100);
         final Box yAxis = new Box(100, 37240.0, 100);
         final Box zAxis = new Box(100, 100, 37240.0);
 
-        xAxis.setMaterial(whiteMaterial);
-        yAxis.setMaterial(whiteMaterial);
-        zAxis.setMaterial(whiteMaterial);
+        final Box xLabel1 = new Box(1000, 100, 100);
+        xLabel1.setTranslateX(19500);
+        xLabel1.setRotate(45);
+        final Box xLabel2 = new Box(1000, 100, 100);
+        xLabel2.setTranslateX(19500);
+        xLabel2.setRotate(-45);
 
-        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        world.getChildren().addAll(axisGroup);
+        final Box yLabel1 = new Box(1200, 100, 100);
+        yLabel1.setTranslateY(19400);
+        yLabel1.setTranslateX(-80);
+        yLabel1.setRotate(-55);
+        final Box yLabel2 = new Box(600, 100, 100);
+        yLabel2.setTranslateY(19600);
+        yLabel2.setTranslateX(80);
+        yLabel2.setRotate(55);
+
+        final Box zLabel1 = new Box(900, 100, 100);
+        zLabel1.setTranslateZ(19500);
+        final Box zLabel2 = new Box(900, 100, 100);
+        zLabel2.setTranslateZ(19500);
+        zLabel2.setTranslateY(800);
+        final Box zLabel3 = new Box(1100, 100, 100);
+        zLabel3.setTranslateZ(19500);
+        zLabel3.setTranslateY(400);
+        zLabel3.setRotate(-45);
+
+
+        xAxis.setMaterial(redMaterial);
+        yAxis.setMaterial(greenMaterial);
+        zAxis.setMaterial(blueMaterial);
+
+        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis, xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
+        world.getChildren().add(axisGroup);
     }
 
     private void buildSpace(Path path) {
@@ -193,12 +215,12 @@ public class Main extends Application {
         }
         for (int j = 0; j < list.size() - 2; j++) {
             String[] partsOrigin = list.get(j).split("\\t\\t\\t");
-            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0])/1000, Double.parseDouble(partsOrigin[1])/1000,
-                    Double.parseDouble(partsOrigin[2])/1000);
+            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0]) / 1000, Double.parseDouble(partsOrigin[1]) / 1000,
+                    Double.parseDouble(partsOrigin[2]) / 1000);
             j++;
             String[] partsTarget = list.get(j).split("\\t\\t\\t");
-            Point3D target = new Point3D(Double.parseDouble(partsTarget[0])/1000, Double.parseDouble(partsTarget[1])/1000,
-                    Double.parseDouble(partsTarget[2])/1000);
+            Point3D target = new Point3D(Double.parseDouble(partsTarget[0]) / 1000, Double.parseDouble(partsTarget[1]) / 1000,
+                    Double.parseDouble(partsTarget[2]) / 1000);
             Cylinder line = createConnection(origin, target);
             line.setMaterial(greyMaterial);
             world.getChildren().add(line);
@@ -298,7 +320,7 @@ public class Main extends Application {
     public Cylinder createConnection(Point3D origin, Point3D target) {
         Point3D yAxis = new Point3D(0, 1, 0);
         Point3D diff = target.subtract(origin);
-        double height = diff.magnitude()*5;
+        double height = diff.magnitude() * 5;
 
         Point3D mid = target.midpoint(origin);
         Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(), mid.getZ());
