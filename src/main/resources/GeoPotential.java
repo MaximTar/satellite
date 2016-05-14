@@ -67,7 +67,7 @@
 //            return dPn(n, z);
 //        } else {
 //            for (int i = 2; i <= n; i++) {
-//                // TODO dPold/dPoldest ???
+//                // Sdelat dPold/dPoldest ???
 //                double dPnew = (2 * i - 1) * dPold + dPoldest;
 ////                double d1P = dPn(i - 1, z);
 ////                double dPnew = (2 * i - 1) * d1P + dPoldest;

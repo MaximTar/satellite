@@ -2,23 +2,21 @@ package main.java.calculation;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import main.java.utils.CalculationUtils;
-import main.java.utils.NumberUtils;
-import main.java.utils.WritingUtils;
+import main.java.utils.*;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 public class CoordinatePane extends GridPane {
 
@@ -69,18 +67,14 @@ public class CoordinatePane extends GridPane {
         startButton.setOnAction(event -> {
             if (NumberUtils.textFieldsAreDouble(t0Input, dtInput, tMaxInput, Vx0Input, Vy0Input, Vz0Input,
                     x0Input, y0Input, z0Input)) {
-                //defining the axes
                 final NumberAxis xAxis = new NumberAxis();
-//                final NumberAxis yAxis = new NumberAxis();
-                final NumberAxis yAxis = new NumberAxis(-29475000, -29365000, 5000);
+                final NumberAxis yAxis = new NumberAxis();
+//                final NumberAxis yAxis = new NumberAxis(-29475000, -29365000, 5000);
                 xAxis.setLabel("N");
                 yAxis.setLabel("Energy");
-                //creating the chart
                 final LineChart<Number, Number> lineChart = new
                         LineChart<>(xAxis, yAxis);
-                //defining a series
                 XYChart.Series series = new XYChart.Series();
-                //populating the series with data
                 List<List<Double>> result = CalculationUtils.calculate(
                         NumberUtils.parseTextAsDouble(t0Input),
                         NumberUtils.parseTextAsDouble(dtInput), NumberUtils.parseTextAsDouble(tMaxInput),
@@ -120,10 +114,9 @@ public class CoordinatePane extends GridPane {
             }
         });
 
-        Button conversionToKeplerButton = new Button("Conversion");
+        Button conversionToKeplerButton = new Button("Conversion To Kepler");
         add(conversionToKeplerButton, 0, 4, 6, 1);
         setHalignment(conversionToKeplerButton, HPos.CENTER);
-
 
         conversionToKeplerButton.setOnAction(event -> {
             List result = Kepler.convertToKepler(NumberUtils.parseTextAsDouble(x0Input),
@@ -140,6 +133,114 @@ public class CoordinatePane extends GridPane {
             Scene startKeplerScene = new Scene(gridKepler, 620, 250);
             mainWindow.setScene(startKeplerScene);
             mainWindow.show();
+        });
+
+        Label checkboxLabelPrecession = new Label("Precession:");
+        CheckBox checkBoxPrecession = new CheckBox();
+        checkboxLabelPrecession.setLabelFor(checkBoxPrecession);
+        checkboxLabelPrecession.setOnMouseClicked(e -> checkBoxPrecession.setSelected(!checkBoxPrecession.isSelected()));
+        Label checkboxLabelNutation = new Label("   Nutation:");
+        CheckBox checkBoxNutation = new CheckBox();
+        checkboxLabelNutation.setLabelFor(checkBoxNutation);
+        checkboxLabelNutation.setOnMouseClicked(e -> checkBoxNutation.setSelected(!checkBoxNutation.isSelected()));
+        Label checkboxLabelER = new Label("   Earth Rotation:");
+        CheckBox checkBoxER = new CheckBox();
+        checkboxLabelER.setLabelFor(checkBoxER);
+        checkboxLabelER.setOnMouseClicked(e -> checkBoxER.setSelected(!checkBoxER.isSelected()));
+        Label checkboxLabelPM = new Label("   Polar Motion:");
+        CheckBox checkBoxPM = new CheckBox();
+        checkboxLabelPM.setLabelFor(checkBoxPM);
+        checkboxLabelPM.setOnMouseClicked(e -> checkBoxPM.setSelected(!checkBoxPM.isSelected()));
+
+        DatePicker datePicker = new DatePicker(LocalDate.now());
+        datePicker.setMaxWidth(120);
+
+        Label hourLabel = new Label("Hours:");
+        Spinner<Integer> hourSpinner = new Spinner<>(0, 23, 0);
+        hourSpinner.setMaxWidth(50);
+//        hourSpinner.setEditable(true);
+        Label minuteLabel = new Label("Minutes:");
+        Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 0);
+        minuteSpinner.setMaxWidth(50);
+//        minuteSpinner.setEditable(true);
+
+        Button conversionToECIButton = new Button("Conversion To ECI");
+
+        HBox hBox = new HBox(3);
+        hBox.getChildren().addAll(checkboxLabelPrecession, checkBoxPrecession, checkboxLabelNutation, checkBoxNutation, checkboxLabelER,
+                checkBoxER, checkboxLabelPM, checkBoxPM);
+        setColumnSpan(hBox, 6);
+        addRow(5, hBox);
+        hBox.setAlignment(Pos.CENTER);
+
+        HBox hBox6row = new HBox(10);
+        hBox6row.getChildren().addAll(datePicker, hourLabel, hourSpinner, minuteLabel, minuteSpinner, conversionToECIButton);
+        setColumnSpan(hBox6row, 6);
+        addRow(6, hBox6row);
+        hBox6row.setAlignment(Pos.CENTER);
+
+        conversionToECIButton.setOnAction(event -> {
+
+            Calendar c = new GregorianCalendar(datePicker.getValue().getYear(), datePicker.getValue().getMonth().getValue(),
+                    datePicker.getValue().getDayOfMonth() - 1, hourSpinner.getValue(), minuteSpinner.getValue());
+
+            ArrayList<ArrayList<Double>> precession = Matrix.identityMatrix(3);
+            ArrayList<ArrayList<Double>> nutation = Matrix.identityMatrix(3);
+            ArrayList<ArrayList<Double>> earthRotation = Matrix.identityMatrix(3);
+            ArrayList<ArrayList<Double>> pole = Matrix.identityMatrix(3);
+            if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")){
+                precession = Matrix.transpose(EcefEci.precessionMatrix(c));
+            } else if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+                precession = EcefEci.precessionMatrix(c);
+            }
+            if (checkBoxNutation.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
+                nutation = Matrix.transpose(EcefEci.nutationMatrix(c));
+            } else if (checkBoxNutation.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+                nutation = EcefEci.nutationMatrix(c);
+            }
+            if (checkBoxER.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
+                earthRotation = Matrix.transpose(EcefEci.rotationMatrix(c));
+            } else if (checkBoxER.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+                earthRotation = EcefEci.rotationMatrix(c);
+            }
+
+            System.out.println(earthRotation);
+
+            if (checkBoxPM.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
+                pole = Matrix.transpose(EcefEci.poleMatrix(c));
+            } else if (checkBoxPM.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+                pole = EcefEci.poleMatrix(c);
+            }
+
+            ArrayList<Double> initialCoordinates = new ArrayList<>();
+            Collections.addAll(initialCoordinates, NumberUtils.parseTextAsDouble(x0Input),
+                    NumberUtils.parseTextAsDouble(y0Input), NumberUtils.parseTextAsDouble(z0Input));
+            ArrayList<Double> initialVelocities = new ArrayList<>();
+            Collections.addAll(initialVelocities, NumberUtils.parseTextAsDouble(Vx0Input),
+                    NumberUtils.parseTextAsDouble(Vy0Input), NumberUtils.parseTextAsDouble(Vz0Input));
+            ArrayList<ArrayList<Double>> newCoordinates = new ArrayList<>();
+            ArrayList<ArrayList<Double>> newVelocities = new ArrayList<>();
+
+            ArrayList<ArrayList<Double>> help = new ArrayList<>();
+            help.add(initialCoordinates);
+            newCoordinates = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(pole, earthRotation), nutation), precession), Matrix.transpose(help));
+            help.clear();
+            help.add(initialVelocities);
+            newVelocities = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(pole, earthRotation), nutation), precession), Matrix.transpose(help));
+
+            getVx0Input().setText(String.valueOf(newVelocities.get(0).get(0)));
+            getVy0Input().setText(String.valueOf(newVelocities.get(1).get(0)));
+            getVz0Input().setText(String.valueOf(newVelocities.get(2).get(0)));
+            getX0Input().setText(String.valueOf(newCoordinates.get(0).get(0)));
+            getY0Input().setText(String.valueOf(newCoordinates.get(1).get(0)));
+            getZ0Input().setText(String.valueOf(newCoordinates.get(2).get(0)));
+
+            if (Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
+                conversionToECIButton.setText("Conversion To ECEF");
+            } else if (Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+                conversionToECIButton.setText("Conversion To ECI");
+            }
+
         });
     }
 

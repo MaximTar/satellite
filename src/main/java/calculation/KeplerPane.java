@@ -100,7 +100,7 @@ public class KeplerPane extends GridPane {
             }
         });
 
-        Button conversionToCoordinatesButton = new Button("Conversion");
+        Button conversionToCoordinatesButton = new Button("Conversion To Descartes");
         add(conversionToCoordinatesButton, 0, 4, 6, 1);
         setHalignment(conversionToCoordinatesButton, HPos.CENTER);
 
@@ -117,7 +117,7 @@ public class KeplerPane extends GridPane {
             gridCoordinate.getVx0Input().setText(String.valueOf(result.get(3)));
             gridCoordinate.getVy0Input().setText(String.valueOf(result.get(4)));
             gridCoordinate.getVz0Input().setText(String.valueOf(result.get(5)));
-            Scene startCoordinateScene = new Scene(gridCoordinate, 600, 250);
+            Scene startCoordinateScene = new Scene(gridCoordinate, 600, 300);
             mainWindow.setScene(startCoordinateScene);
             mainWindow.show();
         });

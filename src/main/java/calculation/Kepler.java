@@ -114,7 +114,7 @@ public class Kepler {
 //        double v = Math.acos((p / r - 1.) / e);
 //        System.out.println('v');
 //        System.out.println(Math.toDegrees(v));
-//      TODO
+//      Sdelat
         double ortrx = x / r;
         double ortry = y / r;
         double ortrz = z / r;

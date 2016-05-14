@@ -12,19 +12,14 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Cylinder;
 import javafx.stage.Stage;
-import main.java.utils.CalculationUtils;
-import main.java.utils.GeoPot;
-import main.java.utils.NumberUtils;
-import main.java.utils.WritingUtils;
+import main.java.utils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class Main extends Application {
@@ -51,7 +46,7 @@ public class Main extends Application {
 
         CoordinatePane gridCoordinate = new CoordinatePane(mainWindow);
         startCoordinateButton.setOnAction(event -> {
-            startCoordinateScene = new Scene(gridCoordinate, 600, 250);
+            startCoordinateScene = new Scene(gridCoordinate, 600, 300);
             mainWindow.setScene(startCoordinateScene);
             mainWindow.show();
         });
@@ -73,6 +68,34 @@ public class Main extends Application {
         mainWindow.setResizable(false);
         mainWindow.setScene(startScene);
         mainWindow.show();
+
+//        ArrayList<ArrayList<Double>> a = new ArrayList<>();
+//        ArrayList<ArrayList<Double>> b = new ArrayList<>();
+//        ArrayList<Double> l1 = new ArrayList<>();
+//        ArrayList<Double> l2 = new ArrayList<>();
+//        ArrayList<Double> l3 = new ArrayList<>();
+//        ArrayList<Double> l4 = new ArrayList<>();
+//
+//        l1.add(1.0);
+//        l1.add(2.0);
+//        l2.add(3.0);
+//        l2.add(4.0);
+//        l3.add(5.0);
+//        l3.add(6.0);
+//        l4.add(7.0);
+//        l4.add(8.0);
+//        a.add(l1);
+//        a.add(l2);
+//        b.add(l3);
+//        b.add(l4);
+//
+//        System.out.println(a);
+//        System.out.println(b);
+//        System.out.println(Matrix.matrixMult(a,b));
+
+//        TimeZone timeZone = TimeZone.getTimeZone("GMT");
+//        Calendar c = Calendar.getInstance(timeZone);
+//        Calendar c2 = new GregorianCalendar(2001, 8, 11);
     }
 
     public static void main(String[] args) {
