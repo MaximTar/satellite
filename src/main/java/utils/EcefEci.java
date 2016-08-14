@@ -16,17 +16,10 @@ public class EcefEci {
     public static ArrayList<ArrayList<Double>> precessionMatrix(Calendar c) {
 
         double T = timeInJC(c);
-//        System.out.println('T');
-//        System.out.println(T);
-
         double z = 0.011180860865024 * T + 5.3071584043699E-6 * T * T + 8.8250634372369E-8 * T * T * T;
         double theta = 0.0097171734551697 * T - 2.0684575704538E-6 * T * T - 2.0281210721855E-7 * T * T * T;
         double dzeta = 0.011180860865024 * T + 1.4635555405335E-6 * T * T + 8.7256766326094E-8 * T * T * T;
 
-//        System.out.println('z');
-//        System.out.println(z);
-//        System.out.println(theta);
-//        System.out.println(dzeta);
 
         ArrayList<Double> line1 = new ArrayList<>();
         ArrayList<Double> line2 = new ArrayList<>();
@@ -56,86 +49,8 @@ public class EcefEci {
     public static ArrayList<ArrayList<Double>> nutationMatrix(Calendar c) {
 
         double T = timeInJC(c);
-        double dpsy = 0;
-        double de = 0;
-        double arg = 0;
-        double l = 2.3555557434939 + 8328.6914257191 * T + 0.00015455472302827 * T * T + 2.5033354424091E-7 * T * T * T - 1.186339077675E-9 * T * T * T * T;
-        double lhatch = 6.2400601269133 + 628.3019551714 * T - 2.681989283898E-6 * T * T + 6.5934660630897E-10 * T * T * T - 5.5705091959486E-11 * T * T * T * T;
-        double F = 1.6279050815375 + 8433.4661569164 * T - 6.1819562105639E-5 * T * T - 5.0275178731059E-9 * T * T * T + 2.0216730502268E-11 * T * T * T * T;
-        double D = 5.1984665886602 + 7771.3771455937 * T - 3.0885540368764E-5 * T * T + 3.1963765995552E-8 * T * T * T - 1.5363745554361E-10 * T * T * T * T;
-        double Om = 2.1824391966157 - 33.757044612636 * T + 3.6226247879867E-5 * T * T + 3.7340349719056E-8 * T * T * T - 2.8793084521095E-10 * T * T * T * T;
-
-        Path currentDir = Paths.get(".");
-        Path pathA1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Akoeff1");
-        Path pathA2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Akoeff2");
-        Path pathB1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Bkoeff1");
-        Path pathB2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Bkoeff2");
-
-        List<String> listA1 = null, listA2 = null, listB1 = null, listB2 = null;
-        try {
-            listA1 = Files.readAllLines(pathA1);
-            listA2 = Files.readAllLines(pathA2);
-            listB1 = Files.readAllLines(pathB1);
-            listB2 = Files.readAllLines(pathB2);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        assert listA1 != null;
-        for (int j = 0; j < listA1.size() - 1; j++) {
-            String[] parts = listA1.get(j).split("\\t");
-            double a1 = microArcSec2Rad(Double.parseDouble(parts[1]));
-            double a2 = microArcSec2Rad(Double.parseDouble(parts[2]));
-            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
-            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
-            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
-            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
-            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
-            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
-            dpsy = dpsy + (a1 * Math.sin(arg) + a2 * Math.cos(arg));
-        }
-
-        assert listA2 != null;
-        for (int j = 0; j < listA2.size() - 1; j++) {
-            String[] parts = listA2.get(j).split("\\t");
-            double a3 = microArcSec2Rad(Double.parseDouble(parts[1]));
-            double a4 = microArcSec2Rad(Double.parseDouble(parts[2]));
-            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
-            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
-            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
-            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
-            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
-            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
-            dpsy = dpsy + (a3 * Math.sin(arg) + a4 * Math.cos(arg)) * T;
-        }
-
-        assert listB1 != null;
-        for (int j = 0; j < listB1.size() - 1; j++) {
-            String[] parts = listB1.get(j).split("\\t");
-            double b1 = microArcSec2Rad(Double.parseDouble(parts[1]));
-            double b2 = microArcSec2Rad(Double.parseDouble(parts[2]));
-            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
-            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
-            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
-            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
-            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
-            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
-            de = de + (b1 * Math.cos(arg) + b2 * Math.sin(arg));
-        }
-
-        assert listB2 != null;
-        for (int j = 0; j < listA2.size() - 1; j++) {
-            String[] parts = listA2.get(j).split("\\t");
-            double b3 = microArcSec2Rad(Double.parseDouble(parts[1]));
-            double b4 = microArcSec2Rad(Double.parseDouble(parts[2]));
-            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
-            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
-            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
-            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
-            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
-            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
-            de = de + (b3 * Math.cos(arg) + b4 * Math.sin(arg)) * T;
-        }
+        double dpsy = deltaPsi(c);
+        double de = deltaEps(c);
 
         double e = 0.40909280422233 - 0.00022696552481143 * T - 2.8604007185463E-9 * T * T + 8.7896720385159E-9 * T * T * T;
         double et = e + de;
@@ -183,9 +98,6 @@ public class EcefEci {
 //        nutationMatrix2.add(line12);
 //        nutationMatrix2.add(line22);
 //        nutationMatrix2.add(line32);
-//
-//        System.out.println("nut2");
-//        System.out.println(nutationMatrix2);
 
         //////////////////////////////////////////////
 
@@ -196,9 +108,6 @@ public class EcefEci {
     public static ArrayList<ArrayList<Double>> rotationMatrix(Calendar c) {
 
         double gast = gast(c);
-
-        System.out.println("gast");
-        System.out.println(gast);
 
         ArrayList<Double> line1 = new ArrayList<>();
         ArrayList<Double> line2 = new ArrayList<>();
@@ -220,8 +129,6 @@ public class EcefEci {
         rotationMatrix.add(line1);
         rotationMatrix.add(line2);
         rotationMatrix.add(line3);
-
-        System.out.println(rotationMatrix);
 
         return rotationMatrix;
     }
@@ -248,20 +155,26 @@ public class EcefEci {
 
     // Вместо UT1 тут UTC
     public static double gast(Calendar c) {
-        double JD = julianDate(c);
-
-        System.out.println("jd");
-        System.out.println(JD);
-
         double deg2rad = Math.PI / 180;
-        double tut1 = (JD - 2451545.0) / 36525.0;
-        double gst = ((-6.2E-6 * tut1 * tut1 * tut1 + 0.093104 * tut1 * tut1 + (876600.0 * 3600.0 + 8640184.812866) * tut1 + 67310.54841)
+        double T = timeInJC(c);
+        double Om = 2.1824391966157 - 33.757044612636 * T + 3.6226247879867E-5 * T * T + 3.7340349719056E-8 * T * T * T - 2.8793084521095E-10 * T * T * T * T;
+        double e = 0.40909280422233 - 0.00022696552481143 * T - 2.8604007185463E-9 * T * T + 8.7896720385159E-9 * T * T * T;
+
+        double gmst = ((-6.2E-6 * T * T * T + 0.093104 * T * T + (876600.0 * 3600.0 + 8640184.812866) * T + 67310.54841)
                 * deg2rad / 240) % (2 * Math.PI);
-        if (gst < 0.0) {
-            gst = gst + 2 * Math.PI;
+        if (gmst < 0.0) {
+            gmst = gmst + 2 * Math.PI;
         }
 
-        return gst;
+        System.out.println("!!!");
+        System.out.println(julianDate(c));
+        System.out.println(T);
+        System.out.println(deltaPsi(c));
+        System.out.println(deltaEps(c));
+        System.out.println(e);
+        System.out.println(Om);
+
+        return (gmst + deltaPsi(c) * Math.cos(e) + 0.00264 * Math.PI / (3600 * 180) * Math.sin(Om) + 0.000063 * Math.PI / (3600 * 180) * Math.sin(2.0 * Om)) % (2 * Math.PI);
     }
 
     public static ArrayList<ArrayList<Double>> poleMatrix(Calendar c) {
@@ -317,5 +230,114 @@ public class EcefEci {
 
     public static double microArcSec2Rad(double arcsec) {
         return arcsec * 2 * Math.PI * 1E-6 / 648000;
+    }
+
+    public static double deltaPsi(Calendar c) {
+
+        double T = timeInJC(c);
+        double dpsy = 0;
+        double arg = 0;
+        double l = 2.3555557434939 + 8328.6914257191 * T + 0.00015455472302827 * T * T + 2.5033354424091E-7 * T * T * T - 1.186339077675E-9 * T * T * T * T;
+        double lhatch = 6.2400601269133 + 628.3019551714 * T - 2.681989283898E-6 * T * T + 6.5934660630897E-10 * T * T * T - 5.5705091959486E-11 * T * T * T * T;
+        double F = 1.6279050815375 + 8433.4661569164 * T - 6.1819562105639E-5 * T * T - 5.0275178731059E-9 * T * T * T + 2.0216730502268E-11 * T * T * T * T;
+        double D = 5.1984665886602 + 7771.3771455937 * T - 3.0885540368764E-5 * T * T + 3.1963765995552E-8 * T * T * T - 1.5363745554361E-10 * T * T * T * T;
+        double Om = 2.1824391966157 - 33.757044612636 * T + 3.6226247879867E-5 * T * T + 3.7340349719056E-8 * T * T * T - 2.8793084521095E-10 * T * T * T * T;
+
+        Path currentDir = Paths.get(".");
+        Path pathA1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Akoeff1");
+        Path pathA2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Akoeff2");
+
+        List<String> listA1 = null, listA2 = null;
+        try {
+            listA1 = Files.readAllLines(pathA1);
+            listA2 = Files.readAllLines(pathA2);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        assert listA1 != null;
+        for (int j = 0; j < listA1.size() - 1; j++) {
+            String[] parts = listA1.get(j).split("\\t");
+            double a1 = microArcSec2Rad(Double.parseDouble(parts[1]));
+            double a2 = microArcSec2Rad(Double.parseDouble(parts[2]));
+            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
+            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
+            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
+            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
+            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
+            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
+            dpsy = dpsy + (a1 * Math.sin(arg) + a2 * Math.cos(arg));
+        }
+
+        assert listA2 != null;
+        for (int j = 0; j < listA2.size() - 1; j++) {
+            String[] parts = listA2.get(j).split("\\t");
+            double a3 = microArcSec2Rad(Double.parseDouble(parts[1]));
+            double a4 = microArcSec2Rad(Double.parseDouble(parts[2]));
+            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
+            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
+            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
+            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
+            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
+            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
+            dpsy = dpsy + (a3 * Math.sin(arg) + a4 * Math.cos(arg)) * T;
+        }
+
+        return dpsy;
+    }
+
+    public static double deltaEps(Calendar c) {
+
+        double T = timeInJC(c);
+        double de = 0;
+        double arg = 0;
+        double l = 2.3555557434939 + 8328.6914257191 * T + 0.00015455472302827 * T * T + 2.5033354424091E-7 * T * T * T - 1.186339077675E-9 * T * T * T * T;
+        double lhatch = 6.2400601269133 + 628.3019551714 * T - 2.681989283898E-6 * T * T + 6.5934660630897E-10 * T * T * T - 5.5705091959486E-11 * T * T * T * T;
+        double F = 1.6279050815375 + 8433.4661569164 * T - 6.1819562105639E-5 * T * T - 5.0275178731059E-9 * T * T * T + 2.0216730502268E-11 * T * T * T * T;
+        double D = 5.1984665886602 + 7771.3771455937 * T - 3.0885540368764E-5 * T * T + 3.1963765995552E-8 * T * T * T - 1.5363745554361E-10 * T * T * T * T;
+        double Om = 2.1824391966157 - 33.757044612636 * T + 3.6226247879867E-5 * T * T + 3.7340349719056E-8 * T * T * T - 2.8793084521095E-10 * T * T * T * T;
+
+        Path currentDir = Paths.get(".");
+        Path pathB1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Bkoeff1");
+        Path pathB2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Bkoeff2");
+
+        List<String> listB1 = null, listB2 = null;
+        try {
+            listB1 = Files.readAllLines(pathB1);
+            listB2 = Files.readAllLines(pathB2);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+
+        assert listB1 != null;
+        for (int j = 0; j < listB1.size() - 1; j++) {
+            String[] parts = listB1.get(j).split("\\t");
+            double b1 = microArcSec2Rad(Double.parseDouble(parts[1]));
+            double b2 = microArcSec2Rad(Double.parseDouble(parts[2]));
+            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
+            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
+            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
+            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
+            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
+            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
+            de = de + (b1 * Math.cos(arg) + b2 * Math.sin(arg));
+        }
+
+        assert listB2 != null;
+        for (int j = 0; j < listB2.size() - 1; j++) {
+            String[] parts = listB2.get(j).split("\\t");
+            double b3 = microArcSec2Rad(Double.parseDouble(parts[1]));
+            double b4 = microArcSec2Rad(Double.parseDouble(parts[2]));
+            double n1 = microArcSec2Rad(Double.parseDouble(parts[3]));
+            double n2 = microArcSec2Rad(Double.parseDouble(parts[4]));
+            double n3 = microArcSec2Rad(Double.parseDouble(parts[5]));
+            double n4 = microArcSec2Rad(Double.parseDouble(parts[6]));
+            double n5 = microArcSec2Rad(Double.parseDouble(parts[7]));
+            arg = n1 * l + n2 * lhatch + n3 * F + n4 * D + n5 * Om;
+            de = de + (b3 * Math.cos(arg) + b4 * Math.sin(arg)) * T;
+        }
+
+        return de;
     }
 }

@@ -40,4 +40,25 @@ public class NumberUtils {
         long tmp = Math.round(value);
         return (double) tmp / factor;
     }
+
+    public static double checkResultAngle (double angle) {
+        if (angle <= 0) {
+            while (angle <= 0) {
+                angle += 360;
+            }
+        } else if (angle >= 360) {
+            while (angle >= 360) {
+                angle -= 360;
+            }
+        }
+        return angle;
+    }
+
+    public static double d2r(double deg) {
+        return Math.toRadians(deg);
+    }
+
+    public static double r2d(double rad) {
+        return Math.toDegrees(rad);
+    }
 }

@@ -3,22 +3,12 @@ package main.java.calculation;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.shape.Cylinder;
 import javafx.stage.Stage;
 import main.java.utils.*;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -69,6 +59,7 @@ public class Main extends Application {
         mainWindow.setScene(startScene);
         mainWindow.show();
 
+        // CHECK ECEF-ECI
 //        ArrayList<ArrayList<Double>> a = new ArrayList<>();
 //        ArrayList<ArrayList<Double>> b = new ArrayList<>();
 //        ArrayList<Double> l1 = new ArrayList<>();
@@ -95,6 +86,47 @@ public class Main extends Application {
 
 //        TimeZone timeZone = TimeZone.getTimeZone("GMT");
 //        Calendar c = Calendar.getInstance(timeZone);
+
+        Calendar c = GregorianCalendar.getInstance();
+        c.set(1992, Calendar.APRIL, 12, 0, 0, 0);
+
+        // CHECK MOON POSITION
+//        System.out.println('!');
+//        System.out.println(MoonCoordinates.julianDate(c));
+//        System.out.println(MoonCoordinates.timeInJC(c));
+//        double T = MoonCoordinates.timeInJC(c);
+//        System.out.println(MoonCoordinates.moonsMeanLongitude(T));
+//        System.out.println(MoonCoordinates.moonsMeanElongation(T));
+//        System.out.println(MoonCoordinates.sunsMeanAnomaly(T));
+//        System.out.println(MoonCoordinates.moonsMeanAnomaly(T));
+//        System.out.println(MoonCoordinates.moonsLatitudeArgument(T));
+//        System.out.println(MoonCoordinates.firstArgument(T));
+//        System.out.println(MoonCoordinates.secondArgument(T));
+//        System.out.println(MoonCoordinates.thirdArgument(T));
+//        System.out.println(MoonCoordinates.earthsOrbitEccentricity(T));
+
+        // CHECK SOLAR COORDINATES
+//        System.out.println('!');
+//        System.out.println(SolarCoordinates.julianDate(c));
+//        System.out.println(SolarCoordinates.timeInJC(c));
+//        double T = SolarCoordinates.timeInJC(c);
+//        System.out.println(SolarCoordinates.sunsMeanLongitude(T));
+//        System.out.println(SolarCoordinates.sunsMeanAnomaly(T));
+//        System.out.println(SolarCoordinates.earthsOrbitEccentrity(T));
+//        System.out.println(SolarCoordinates.sunsCenterEquation(T));
+//        System.out.println(SolarCoordinates.sunsTrueLongitude(T));
+//        System.out.println(SolarCoordinates.sunsRadiusVector(T));
+//        System.out.println(SolarCoordinates.longitude(T));
+//        System.out.println(SolarCoordinates.sunsApparentLongitude(T));
+//        System.out.println(SolarCoordinates.eclipticsMeanObliquity(T));
+//        System.out.println(SolarCoordinates.eclipticsMeanObliquityApparent(T));
+//        System.out.println(SolarCoordinates.sunsRightAscensionApparent(T));
+//        System.out.println(SolarCoordinates.sunsRightDeclinationApparent(T));
+//
+
+        // CHECK ECEF-ECI
+//        System.out.println('!');
+//        System.out.println(EcefEci.rotationMatrix(c));
 //        Calendar c2 = new GregorianCalendar(2001, 8, 11);
     }
 

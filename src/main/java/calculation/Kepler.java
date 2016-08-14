@@ -1,7 +1,6 @@
 package main.java.calculation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class Kepler {
@@ -23,7 +22,7 @@ public class Kepler {
 //        double b = p / Math.sqrt(1 - e * e);
         double n = Math.sqrt(MU / (a * a * a));
         double M = n * (0 - tau);
-        double E = kpSolvekepler(M, e, 1E-10);
+        double E = kpSolveKepler(M, e, 1E-10);
         double v = 2 * Math.atan((Math.tan(E / 2)) / (Math.sqrt((1 - e) / (1 + e))));
 //        double f = e * MU;
         double u = v + W;
@@ -297,7 +296,7 @@ public class Kepler {
         return h / 6 * (f(a, e) + f(b, e) + 2 * sum + 4 * (sum2 + b));
     }
 
-    public static double kpSolvekepler(double M, double e, double acc) {
+    public static double kpSolveKepler(double M, double e, double acc) {
         double curE, nextE;
         nextE = M;
         do {

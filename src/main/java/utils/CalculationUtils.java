@@ -2,9 +2,7 @@ package main.java.utils;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class CalculationUtils {
 
@@ -134,12 +132,13 @@ public class CalculationUtils {
             write(fileName.getName(), text);
         }
 
-        resList.add(xList);
-        resList.add(yList);
-        resList.add(zList);
-        resList.add(vxList);
-        resList.add(vyList);
-        resList.add(vzList);
+        Collections.addAll(resList, xList, yList, zList, vxList, vyList, vzList);
+//        resList.add(xList);
+//        resList.add(yList);
+//        resList.add(zList);
+//        resList.add(vxList);
+//        resList.add(vyList);
+//        resList.add(vzList);
         return (resList);
     }
 
