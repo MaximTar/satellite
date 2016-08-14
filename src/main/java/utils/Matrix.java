@@ -48,8 +48,8 @@ public class Matrix {
 
         for (int j = 0; j < a.get(0).size(); j++) {
             ArrayList<Double> line = new ArrayList<>();
-            for (int i = 0; i < a.size(); i++) {
-                line.add(a.get(i).get(j));
+            for (ArrayList<Double> anA : a) {
+                line.add(anA.get(j));
             }
             b.add(line);
         }
