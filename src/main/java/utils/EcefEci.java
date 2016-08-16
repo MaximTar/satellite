@@ -186,7 +186,7 @@ public class EcefEci {
         double yp = 0;
 
         Path currentDir = Paths.get(".");
-        Path pathXYPole = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "XYPole");
+        Path pathXYPole = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "resources", "XYPole");
 
         List<String> listXYPole = null;
         try {
@@ -244,8 +244,8 @@ public class EcefEci {
         double Om = 2.1824391966157 - 33.757044612636 * T + 3.6226247879867E-5 * T * T + 3.7340349719056E-8 * T * T * T - 2.8793084521095E-10 * T * T * T * T;
 
         Path currentDir = Paths.get(".");
-        Path pathA1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Akoeff1");
-        Path pathA2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Akoeff2");
+        Path pathA1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "resources", "Akoeff1");
+        Path pathA2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "resources", "Akoeff2");
 
         List<String> listA1 = null, listA2 = null;
         try {
@@ -298,8 +298,8 @@ public class EcefEci {
         double Om = 2.1824391966157 - 33.757044612636 * T + 3.6226247879867E-5 * T * T + 3.7340349719056E-8 * T * T * T - 2.8793084521095E-10 * T * T * T * T;
 
         Path currentDir = Paths.get(".");
-        Path pathB1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Bkoeff1");
-        Path pathB2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "utils", "Bkoeff2");
+        Path pathB1 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "resources", "Bkoeff1");
+        Path pathB2 = Paths.get(currentDir.toAbsolutePath().toString(), "src", "main", "java", "resources", "Bkoeff2");
 
         List<String> listB1 = null, listB2 = null;
         try {

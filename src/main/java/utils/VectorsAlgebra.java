@@ -12,9 +12,9 @@ public class VectorsAlgebra {
     public static double absoluteValue(List<Double> r) {
         double abs = 0;
         for (Double i : r) {
-            abs = i * i;
+            abs += i * i;
         }
-        return abs;
+        return Math.sqrt(abs);
     }
 
     public static List<Double> normalize (List<Double> r) {
