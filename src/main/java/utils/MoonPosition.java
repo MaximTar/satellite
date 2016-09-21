@@ -36,6 +36,7 @@ public class MoonPosition {
         ArrayList<Double> result = new ArrayList<>();
         double T = timeInJC(c);
         double deg2rad = Math.PI / 180;
+        double ER = 6371000.;
 
         double eclipticLongitude = 218.32 + 481267.8813 * T
                 + 6.29 * Math.sin((134.9 + 477198.85 * T) * deg2rad)
@@ -71,9 +72,9 @@ public class MoonPosition {
 
         // find magnitude of moon vector, calculate moon position vector components
         double vectorMagnitude = 1.0 / Math.sin(horizontalParallax);
-        double moonVector1 = vectorMagnitude * l;
-        double moonVector2 = vectorMagnitude * m;
-        double moonVector3 = vectorMagnitude * n;
+        double moonVector1 = vectorMagnitude * l * ER;
+        double moonVector2 = vectorMagnitude * m * ER;
+        double moonVector3 = vectorMagnitude * n * ER;
 
         // find rt ascension and declination
         double rightAscension = Math.atan2(m, l);

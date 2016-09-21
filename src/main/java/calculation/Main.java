@@ -84,11 +84,11 @@ public class Main extends Application {
 //        System.out.println(b);
 //        System.out.println(Matrix.matrixMult(a,b));
 
-//        TimeZone timeZone = TimeZone.getTimeZone("GMT");
-//        Calendar c = Calendar.getInstance(timeZone);
+        TimeZone timeZone = TimeZone.getTimeZone("GMT");
+        Calendar c = Calendar.getInstance(timeZone);
 
-        Calendar c = GregorianCalendar.getInstance();
-        c.set(1992, Calendar.APRIL, 12, 0, 0, 0);
+//        Calendar c = GregorianCalendar.getInstance();
+//        c.set(1992, Calendar.APRIL, 12, 0, 0, 0);
 
         // CHECK MOON POSITION
 //        System.out.println('!');

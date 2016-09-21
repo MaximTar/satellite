@@ -33,7 +33,7 @@ public class Drag {
         // h in km, p0 in kg/m^3
         double p0 = 0, h1 = 0, h2 = 0, H = 0;
         assert listDens != null;
-        for (int j = 0; j < listDens.size() - 1; j++) {
+        for (int j = 0; j <= listDens.size() - 1; j++) {
             String[] parts = listDens.get(j).split("\\t");
             h1 = Double.parseDouble(parts[0]);
             h2 = Double.parseDouble(parts[1]);
@@ -44,6 +44,15 @@ public class Drag {
             }
         }
 
-        return p0 * Math.exp((h1 - h) / H);
+        return p0 * Math.exp(((h1 / 1000) - (h / 1000)) / H);
+    }
+
+    public static double earthsRotation(double phi, double h) {
+        double Re = 6378100.0;
+        double Rp = 6356800.0;
+        double w = 7.2921158553E-5;
+
+        return ((Re * Rp) / (Math.sqrt(Rp * Rp + Re * Re * Math.tan(phi) * Math.tan(phi))) +
+                (Rp * Rp * h) / (Math.sqrt(Rp * Rp + Re * Re * Math.tan(phi) * Math.tan(phi)))) * w;
     }
 }

@@ -96,6 +96,38 @@ public class CalculationUtils {
         res.vy = GeoPotential.get(1);
         res.vz = GeoPotential.get(2);
 
+//        Добавки (гравитация Солнца и Луны, солнечное давление и атмосфера)
+        double muSun = 132712440018E9;
+        double muMoon = 4902.779E9;
+        TimeZone timeZone = TimeZone.getTimeZone("GMT");
+        Calendar c = Calendar.getInstance(timeZone);
+        List<Double> sunPos = SunPosition.sunPosition(c);
+        List<Double> moonPos = MoonPosition.moonPosition(c);
+        List<Double> sunGravity = Gravitation.force(muSun, U.x, U.y, U.z, sunPos.get(0), sunPos.get(1), sunPos.get(2));
+        List<Double> moonGravity = Gravitation.force(muMoon, U.x, U.y, U.z, moonPos.get(0), moonPos.get(1), moonPos.get(2));
+        res.vx += sunGravity.get(0);
+        res.vy += sunGravity.get(1);
+        res.vz += sunGravity.get(2);
+        res.vx += moonGravity.get(0);
+        res.vy += moonGravity.get(1);
+        res.vz += moonGravity.get(2);
+
+        double A = 1; // Площадь сечения
+        double C = 1; // Передача импульса за счёт поглощения и отражения
+        List<Double> sunPres = SunRadiationPressure.force(A, C, c);
+        res.vx += sunPres.get(0);
+        res.vy += sunPres.get(1);
+        res.vz += sunPres.get(2);
+
+        List<Double> lla = ECEF2LLA.conversion(U.x, U.y, U.z);
+        // TODO Уточнить, как учитывать вращение (и надо ли)
+        // TODO Посмотреть, почему этот пункт так сильно поджирает
+        // double earthsRotation = Drag.earthsRotation(NumberUtils.d2r(lla.get(0)), res.z);
+        double drag_coefficient = 2; // "Эмпирический коэффициент примерно равный 2"
+        res.vx += Drag.force(drag_coefficient, Drag.exponentialModelDensity(lla.get(2)), U.vx, A);
+        res.vy += Drag.force(drag_coefficient, Drag.exponentialModelDensity(lla.get(2)), U.vy, A);
+        res.vz += Drag.force(drag_coefficient, Drag.exponentialModelDensity(lla.get(2)), U.vz, A);
+
         return (res);
     }
 

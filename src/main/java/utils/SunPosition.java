@@ -36,6 +36,7 @@ public class SunPosition {
         ArrayList<Double> result = new ArrayList<>();
         double T = timeInJC(c);
         double deg2rad = Math.PI / 180;
+        double AU = 149597870700.;
 
         double meanLongitude = 280.460 + 36000.77 * T;
         meanLongitude = meanLongitude % 360.0;
@@ -58,9 +59,9 @@ public class SunPosition {
         // find magnitude of sun vector, calculate sun position vector components
         double vectorMagnitude = 1.000140612 - 0.016708617 * Math.cos(meanAnomaly)
                 - 0.000139589 * Math.cos(2.0 * meanAnomaly);
-        double sunVector1 = vectorMagnitude * Math.cos(eclipticLongitude);
-        double sunVector2 = vectorMagnitude * Math.cos(obliquity) * Math.sin(eclipticLongitude);
-        double sunVector3 = vectorMagnitude * Math.sin(obliquity) * Math.sin(eclipticLongitude);
+        double sunVector1 = vectorMagnitude * Math.cos(eclipticLongitude) * AU;
+        double sunVector2 = vectorMagnitude * Math.cos(obliquity) * Math.sin(eclipticLongitude) * AU;
+        double sunVector3 = vectorMagnitude * Math.sin(obliquity) * Math.sin(eclipticLongitude) * AU;
 
         double rightAscension = Math.atan(Math.cos(obliquity) * Math.tan(eclipticLongitude));
 
