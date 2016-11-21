@@ -1,4 +1,4 @@
-package main.java.calculation;
+package calculation;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -11,7 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import main.java.utils.*;
+import utils.*;
 
 import java.io.*;
 
@@ -22,7 +22,7 @@ public class CoordinatePane extends GridPane {
 
     private Scene resultScene;
 
-//    private TextField t0Input = new TextField("0");
+    //    private TextField t0Input = new TextField("0");
 //    private TextField dtInput = new TextField("1000");
 //    private TextField tMaxInput = new TextField("86500");
 //    private TextField Vx0Input = new TextField("3100.0");
@@ -75,12 +75,17 @@ public class CoordinatePane extends GridPane {
                 final LineChart<Number, Number> lineChart = new
                         LineChart<>(xAxis, yAxis);
                 XYChart.Series series = new XYChart.Series();
+//                XYChart.Series series2 = new XYChart.Series();
+//                XYChart.Series series3 = new XYChart.Series();
                 List<List<Double>> result = CalculationUtils.calculate(
                         NumberUtils.parseTextAsDouble(t0Input),
                         NumberUtils.parseTextAsDouble(dtInput), NumberUtils.parseTextAsDouble(tMaxInput),
                         NumberUtils.parseTextAsDouble(x0Input), NumberUtils.parseTextAsDouble(y0Input),
                         NumberUtils.parseTextAsDouble(z0Input), NumberUtils.parseTextAsDouble(Vx0Input),
-                        NumberUtils.parseTextAsDouble(Vy0Input), NumberUtils.parseTextAsDouble(Vz0Input)
+                        NumberUtils.parseTextAsDouble(Vy0Input), NumberUtils.parseTextAsDouble(Vz0Input),
+//                        0.6830127018922193, -0.1830127018922193, 0.6830127018922193, 0.1830127018922193, -0.00115, 0, 0
+                        0.9961946980917455, 0, 0, 0.08715574274765817, 0, 0, 0.00115
+//                        1, 0, 0, 0, 1, 0.3, 0
                 );
 
                 List<Double> x = result.get(0);
@@ -96,7 +101,10 @@ public class CoordinatePane extends GridPane {
 //                        series.getData().add(new XYChart.Data(x.get(i), y.get(i)));
                     series.getData().add(new XYChart.Data(i, (Math.pow(vx.get(i), 2) + Math.pow(vy.get(i), 2) + Math.pow(vz.get(i), 2)) / 2 -
                             (mu / (x.get(i) * x.get(i) + y.get(i) * y.get(i) + z.get(i) * z.get(i))) * Math.sqrt(x.get(i) * x.get(i) + y.get(i) * y.get(i) + z.get(i) * z.get(i))));
-//                    series.getData().add(new XYChart.Data(i, Math.sqrt(vx.get(i) * vx.get(i) + vy.get(i) * vy.get(i) + vz.get(i) * vz.get(i))));
+                    // KinMoment Components
+//                    series.getData().add(new XYChart.Data(i, y.get(i) * vz.get(i) - z.get(i) * vy.get(i)));
+//                    series2.getData().add(new XYChart.Data(i, z.get(i) * vx.get(i) - x.get(i) * vz.get(i)));
+//                    series3.getData().add(new XYChart.Data(i, x.get(i) * vy.get(i) - y.get(i) * vx.get(i)));
                 }
                 List resultAngles = Kepler.convertToKepler(NumberUtils.parseTextAsDouble(x0Input),
                         NumberUtils.parseTextAsDouble(y0Input), NumberUtils.parseTextAsDouble(z0Input),
@@ -106,9 +114,15 @@ public class CoordinatePane extends GridPane {
                 String elements = String.join(spacing, resultAngles.toString());
                 WritingUtils.write(CalculationUtils.fileName.getName(), elements);
                 series.setName("Energy");
+                // KinMoment Components
+//                series.setName("c1");
+//                series2.setName("c2");
+//                series3.setName("c3");
                 lineChart.getData().add(series);
+                // KinMoment Components
+//                lineChart.getData().addAll(series, series2, series3);
                 lineChart.setCreateSymbols(false);
-                resultScene = new Scene(lineChart, 1600, 600);
+                resultScene = new Scene(lineChart, 1000, 600);
                 mainWindow.setScene(resultScene);
                 mainWindow.show();
             }
@@ -188,7 +202,7 @@ public class CoordinatePane extends GridPane {
             ArrayList<ArrayList<Double>> nutation = Matrix.identityMatrix(3);
             ArrayList<ArrayList<Double>> earthRotation = Matrix.identityMatrix(3);
             ArrayList<ArrayList<Double>> pole = Matrix.identityMatrix(3);
-            if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")){
+            if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
                 precession = Matrix.transpose(EcefEci.precessionMatrix(c));
             } else if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
                 precession = EcefEci.precessionMatrix(c);

@@ -1,5 +1,10 @@
 package animation;
 
+/**
+ * Created by Maxim Tarasov on 12.10.2016.
+ */
+
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -8,14 +13,18 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -24,8 +33,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import utils.Form;
-import utils.Material;
+import utils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,9 +43,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Double.*;
+import static java.lang.Double.parseDouble;
 
-public class Main extends Application {
+public class AniQuat extends Application {
 
     private static final String titleTxt = "Animation";
     final Group root = new Group();
@@ -47,7 +55,7 @@ public class Main extends Application {
     final Form cameraForm = new Form();
     final Form cameraForm2 = new Form();
     final Form cameraForm3 = new Form();
-    final double cameraDistance = 200000;
+    final double cameraDistance = 2000;
     final Form spaceGroup = new Form();
     double mousePosX;
     double mousePosY;
@@ -58,9 +66,10 @@ public class Main extends Application {
     private Integer j = 0;
     Stage primaryStage;
     List<String> list;
-    List<Double> x = new ArrayList<>();
-    List<Double> y = new ArrayList<>();
-    List<Double> z = new ArrayList<>();
+    List<Double> qi = new ArrayList<>();
+    List<Double> qj = new ArrayList<>();
+    List<Double> qk = new ArrayList<>();
+    List<Double> ql = new ArrayList<>();
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -133,7 +142,7 @@ public class Main extends Application {
         cameraForm3.setRotateZ(180.0);
 
         camera.setNearClip(1);
-        camera.setFarClip(1E8);
+        camera.setFarClip(30000);
         camera.setTranslateZ(-cameraDistance);
         cameraForm.ry.setAngle(320.0);
         cameraForm.rx.setAngle(40);
@@ -144,34 +153,41 @@ public class Main extends Application {
         Material greenMaterial = new Material(Color.GREEN);
         Material blueMaterial = new Material(Color.BLUE);
 
-        final Box xAxis = new Box(37240.0, 100, 100);
-        final Box yAxis = new Box(100, 37240.0, 100);
-        final Box zAxis = new Box(100, 100, 37240.0);
+        final Box xAxis = new Box(370, 1, 1);
+        final Box yAxis = new Box(1, 370, 1);
+        final Box zAxis = new Box(1, 1, 370);
 
-        final Box xLabel1 = new Box(1000, 100, 100);
-        xLabel1.setTranslateX(19500);
+        Box axisX = new Box(370, 1 , 1);
+        Box axisY = new Box(1, 370 , 1);
+        Box axisZ = new Box(1, 1 , 370);
+        final StackPane axisStack = new StackPane();
+        axisStack.getChildren().addAll(axisX, axisY, axisZ);
+
+        final Box xLabel1 = new Box(10, 1, 1);
+        xLabel1.setTranslateX(195);
         xLabel1.setRotate(45);
-        final Box xLabel2 = new Box(1000, 100, 100);
-        xLabel2.setTranslateX(19500);
+        final Box xLabel2 = new Box(10, 1, 1);
+        xLabel2.setTranslateX(195);
         xLabel2.setRotate(-45);
 
-        final Box yLabel1 = new Box(1200, 100, 100);
-        yLabel1.setTranslateY(19400);
-        yLabel1.setTranslateX(-80);
+        final Box yLabel1 = new Box(12, 1, 1);
+        yLabel1.setTranslateY(194);
+//        yLabel1.setTranslateX(-80);
         yLabel1.setRotate(-55);
-        final Box yLabel2 = new Box(600, 100, 100);
-        yLabel2.setTranslateY(19600);
-        yLabel2.setTranslateX(80);
+        final Box yLabel2 = new Box(7, 1, 1);
+        yLabel2.setTranslateX(2);
+        yLabel2.setTranslateY(196);
+//        yLabel2.setTranslateX(80);
         yLabel2.setRotate(55);
 
-        final Box zLabel1 = new Box(900, 100, 100);
-        zLabel1.setTranslateZ(19500);
-        final Box zLabel2 = new Box(900, 100, 100);
-        zLabel2.setTranslateZ(19500);
-        zLabel2.setTranslateY(800);
-        final Box zLabel3 = new Box(1100, 100, 100);
-        zLabel3.setTranslateZ(19500);
-        zLabel3.setTranslateY(400);
+        final Box zLabel1 = new Box(9, 1, 1);
+        zLabel1.setTranslateZ(195);
+        final Box zLabel2 = new Box(9, 1, 1);
+        zLabel2.setTranslateZ(195);
+        zLabel2.setTranslateY(8);
+        final Box zLabel3 = new Box(11, 1, 1);
+        zLabel3.setTranslateZ(195);
+        zLabel3.setTranslateY(4);
         zLabel3.setRotate(-45);
 
 
@@ -185,52 +201,59 @@ public class Main extends Application {
 
     private void buildSpace(Path path) {
 
-        Material greenMaterial = new Material(Color.GREEN);
         Material whiteMaterial = new Material(Color.WHITE);
         Material greyMaterial = new Material(Color.GREY);
 
         Form spaceForm = new Form();
-        Form earthForm = new Form();
 
-        Sphere earthSphere = new Sphere(6370.0);
-        earthSphere.setMaterial(greenMaterial);
+        Cylinder cylinder = new Cylinder(50.0, 200.0);
+        cylinder.setMaterial(whiteMaterial);
+//        cylinder.setRotationAxis(Rotate.X_AXIS);
+//        cylinder.setRotate(90);
+        cylinder.setRotationAxis(Rotate.Z_AXIS);
+        cylinder.setRotate(90);
 
-        Sphere satelliteSphere = new Sphere(500.0);
-        satelliteSphere.setMaterial(whiteMaterial);
+//        final Box pivotY = new Box(1, 300, 1);
+        final Box pivotZ = new Box(1, 1, 300);
+//        pivotY.setMaterial(greyMaterial);
+        pivotZ.setMaterial(greyMaterial);
 
-        spaceForm.getChildren().add(earthForm);
-        earthForm.getChildren().add(earthSphere);
         spaceGroup.getChildren().add(spaceForm);
 
         final StackPane stack = new StackPane();
-        stack.getChildren().addAll(satelliteSphere);
+//        stack.getChildren().addAll(cylinder, pivotY);
+        stack.getChildren().addAll(cylinder, pivotZ);
+//        stack.getChildren().addAll(cylinder);
         spaceGroup.getChildren().add(stack);
 
         world.getChildren().addAll(spaceGroup);
 
-        try {
-            list = Files.readAllLines(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (int j = 0; j < list.size() - 2; j++) {
-            String[] partsOrigin = list.get(j).split("\\t\\t\\t");
-            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0]) / 1000, Double.parseDouble(partsOrigin[1]) / 1000,
-                    Double.parseDouble(partsOrigin[2]) / 1000);
-            j++;
-            String[] partsTarget = list.get(j).split("\\t\\t\\t");
-            Point3D target = new Point3D(Double.parseDouble(partsTarget[0]) / 1000, Double.parseDouble(partsTarget[1]) / 1000,
-                    Double.parseDouble(partsTarget[2]) / 1000);
-            Cylinder line = createConnection(origin, target);
-            line.setMaterial(greyMaterial);
-            world.getChildren().add(line);
-        }
+//        try {
+//            list = Files.readAllLines(path);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        for (int j = 0; j < list.size() - 2; j++) {
+//            String[] partsOrigin = list.get(j).split("\\t\\t\\t");
+//            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0]) / 1000, Double.parseDouble(partsOrigin[1]) / 1000,
+//                    Double.parseDouble(partsOrigin[2]) / 1000);
+//            j++;
+//            String[] partsTarget = list.get(j).split("\\t\\t\\t");
+//            Point3D target = new Point3D(Double.parseDouble(partsTarget[0]) / 1000, Double.parseDouble(partsTarget[1]) / 1000,
+//                    Double.parseDouble(partsTarget[2]) / 1000);
+//            Cylinder line = createConnection(origin, target);
+//            line.setMaterial(greyMaterial);
+//            world.getChildren().add(line);
+//        }
 
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
+        stack.setTranslateX(-50);
+        stack.setTranslateY(-100);
+        // For pivotY
+//        stack.setTranslateY(-150);
 
-        //Path path = Paths.get("C:", "Users", "Labcomp-1", "IdeaProjects", "hello", "hello", "04-02-2016 04-26.txt");
         try {
             list = Files.readAllLines(path);
         } catch (IOException ex) {
@@ -239,24 +262,88 @@ public class Main extends Application {
 
         for (int j = 0; j < list.size() - 1; j++) {
             String[] parts = list.get(j).split("\\t\\t\\t");
-            x.add(j, parseDouble(parts[0]));
-            y.add(j, parseDouble(parts[1]));
-            z.add(j, parseDouble(parts[2]));
+            qi.add(j, parseDouble(parts[0]));
+            qj.add(j, parseDouble(parts[1]));
+            qk.add(j, parseDouble(parts[2]));
+            ql.add(j, parseDouble(parts[3]));
         }
 
-        Duration duration = Duration.millis(10);
+        j++;
+
+        Duration duration = Duration.millis(100);
         EventHandler onFinished = t -> {
-//                i = 0;
-            stack.setTranslateX(x.get(j) / 1000);
-            stack.setTranslateY(y.get(j) / 1000);
-            stack.setTranslateZ(z.get(j) / 1000);
+//            j = 1;
+            double qw = qi.get(j);
+            double qx = qj.get(j);
+            double qy = qk.get(j);
+            double qz = ql.get(j);
+            // Variant
+//            double test = qx * qy + qz * qw;
+//            double heading, attitude, bank;
+//            if (test > 0.499) { // singularity at north pole
+//                heading = 2 * Math.atan2(qx, qw);
+//                attitude = Math.PI / 2;
+//                bank = 0;
+//                return;
+//            }
+//            if (test < -0.499) { // singularity at south pole
+//                heading = -2 * Math.atan2(qx, qw);
+//                attitude = -Math.PI / 2;
+//                bank = 0;
+//                return;
+//            }
+//            double sqx = qx * qx;
+//            double sqy = qy * qy;
+//            double sqz = qz * qz;
+//            heading = Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * sqy - 2 * sqz);
+//            attitude = Math.asin(2 * test);
+//            bank = Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * sqx - 2 * sqz);
+
+//            stack.getTransforms().add(rynnBox);
+//            stack.getTransforms().add(rznnBox);
+//            stack.getTransforms().add(rxnnBox);
+
+            // Variant
+//            Quaternion q = new Quaternion(qw, qx, qy, qz);
+//            ArrayList<Double> eulerAngles = Quaternion.mavlink_quaternion_to_euler(q);
+//            double phi = bank;
+//            double theta = heading;
+//            double psi = attitude;
+//
+//            double A11 = Math.cos(psi) * Math.cos(theta);
+//            double A12 = Math.cos(phi) * Math.sin(psi) + Math.cos(psi) * Math.sin(phi) * Math.sin(theta);
+//            double A13 = Math.sin(psi) * Math.sin(phi) - Math.cos(psi) * Math.cos(phi) * Math.sin(theta);
+//            double A21 = -Math.cos(theta) * Math.sin(psi);
+//            double A22 = Math.cos(psi) * Math.cos(phi) - Math.sin(psi) * Math.sin(phi) * Math.sin(theta);
+//            double A23 = Math.cos(psi) * Math.sin(phi) + Math.cos(phi) * Math.sin(psi) * Math.sin(theta);
+//            double A31 = Math.sin(theta);
+//            double A32 = -Math.cos(theta) * Math.sin(phi);
+//            double A33 = Math.cos(phi) * Math.cos(theta);
+//
+//            double d = Math.acos((A11 + A22 + A33 - 1d) / 2d);
+//            if (d != 0d) {
+//                double den = 2d * Math.sin(d);
+//                Point3D p = new Point3D((A32 - A23) / den, (A13 - A31) / den, (A21 - A12) / den);
+//                stack.setRotationAxis(p);
+//                stack.setRotate(Math.toDegrees(d));
+//            }
+
+            double abs = Math.sqrt(qx * qx + qy * qy + qz * qz);
+//            Point3D p = new Point3D(-qx / abs, -qy / abs, -qz / abs);
+            Point3D p = new Point3D(qx / abs, qy / abs, qz / abs);
+            double angle = 2 * Math.acos(qw);
+            stack.setRotationAxis(p);
+            stack.setRotate(Math.toDegrees(angle));
+
             j++;
-            if (j == x.size()) {
-                j = 0;
-            }
+//            if (j == qj.size()) {
+//                j = 0;
+//            }
         };
+
         KeyFrame keyFrame = new KeyFrame(duration, onFinished);
         timeline.getKeyFrames().add(keyFrame);
+        //timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
 

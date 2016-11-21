@@ -1,4 +1,4 @@
-package main.java.calculation;
+package calculation;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -11,8 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import main.java.utils.CalculationUtils;
-import main.java.utils.NumberUtils;
+import utils.CalculationUtils;
+import utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,8 @@ public class KeplerPane extends GridPane {
                 List<List<Double>> result = CalculationUtils.calculate(
                         NumberUtils.parseTextAsDouble(Kt0Input), NumberUtils.parseTextAsDouble(KdtInput),
                         NumberUtils.parseTextAsDouble(KtMaxInput), subresult.get(0), subresult.get(1),
-                        subresult.get(2), subresult.get(3), subresult.get(4), subresult.get(5)
+                        subresult.get(2), subresult.get(3), subresult.get(4), subresult.get(5),
+                        1, 0, 0, 0, 0, 0, 0
                 );
 
                 List<Double> x = result.get(0);

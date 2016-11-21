@@ -1,4 +1,4 @@
-package main.java.utils;
+package utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,7 +36,7 @@ public class MoonPosition {
         ArrayList<Double> result = new ArrayList<>();
         double T = timeInJC(c);
         double deg2rad = Math.PI / 180;
-        double ER = 6371000.;
+        double ER = 6378136.3;
 
         double eclipticLongitude = 218.32 + 481267.8813 * T
                 + 6.29 * Math.sin((134.9 + 477198.85 * T) * deg2rad)

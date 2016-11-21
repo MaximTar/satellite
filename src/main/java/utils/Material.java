@@ -1,4 +1,4 @@
-package main.java.utils;
+package utils;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
