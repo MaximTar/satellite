@@ -40,8 +40,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Double.parseDouble;
 
@@ -50,6 +49,7 @@ public class AniQuat extends Application {
     private static final String titleTxt = "Animation";
     final Group root = new Group();
     final Group axisGroup = new Group();
+    final StackPane axisLVLH = new StackPane();
     final Form world = new Form();
     final PerspectiveCamera camera = new PerspectiveCamera(true);
     final Form cameraForm = new Form();
@@ -70,6 +70,12 @@ public class AniQuat extends Application {
     List<Double> qj = new ArrayList<>();
     List<Double> qk = new ArrayList<>();
     List<Double> ql = new ArrayList<>();
+    List<Double> x = new ArrayList<>();
+    List<Double> y = new ArrayList<>();
+    List<Double> z = new ArrayList<>();
+    List<Double> vx = new ArrayList<>();
+    List<Double> vy = new ArrayList<>();
+    List<Double> vz = new ArrayList<>();
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -157,11 +163,11 @@ public class AniQuat extends Application {
         final Box yAxis = new Box(1, 370, 1);
         final Box zAxis = new Box(1, 1, 370);
 
-        Box axisX = new Box(370, 1 , 1);
-        Box axisY = new Box(1, 370 , 1);
-        Box axisZ = new Box(1, 1 , 370);
-        final StackPane axisStack = new StackPane();
-        axisStack.getChildren().addAll(axisX, axisY, axisZ);
+//        Box axisX = new Box(370, 1 , 1);
+//        Box axisY = new Box(1, 370 , 1);
+//        Box axisZ = new Box(1, 1 , 370);
+//        final StackPane axisStack = new StackPane();
+//        axisStack.getChildren().addAll(axisX, axisY, axisZ);
 
         final Box xLabel1 = new Box(10, 1, 1);
         xLabel1.setTranslateX(195);
@@ -196,6 +202,7 @@ public class AniQuat extends Application {
         zAxis.setMaterial(blueMaterial);
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis, xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
+//        axisLVLH.getChildren().addAll(xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
         world.getChildren().add(axisGroup);
     }
 
@@ -209,6 +216,8 @@ public class AniQuat extends Application {
         Cylinder cylinder = new Cylinder(50.0, 200.0);
         cylinder.setMaterial(whiteMaterial);
 //        cylinder.setRotationAxis(Rotate.X_AXIS);
+//        cylinder.setRotate(90);
+//        cylinder.setRotationAxis(Rotate.Y_AXIS);
 //        cylinder.setRotate(90);
         cylinder.setRotationAxis(Rotate.Z_AXIS);
         cylinder.setRotate(90);
@@ -224,7 +233,25 @@ public class AniQuat extends Application {
 //        stack.getChildren().addAll(cylinder, pivotY);
         stack.getChildren().addAll(cylinder, pivotZ);
 //        stack.getChildren().addAll(cylinder);
+
+        Material redMaterial = new Material(Color.RED);
+        Material greenMaterial = new Material(Color.GREEN);
+        Material blueMaterial = new Material(Color.BLUE);
+//        final StackPane axisLVLH = new StackPane();
+        final Box LVLHX = new Box(360, 1, 1);
+        final Box LVLHY = new Box(1, 360, 1);
+        final Box LVLHZ = new Box(1, 1, 360);
+        LVLHX.setMaterial(redMaterial);
+        LVLHY.setMaterial(greenMaterial);
+        LVLHZ.setMaterial(blueMaterial);
+        axisLVLH.getChildren().addAll(LVLHX, LVLHY, LVLHZ);
+
         spaceGroup.getChildren().add(stack);
+
+        axisLVLH.setTranslateX(-180);
+        axisLVLH.setTranslateY(-180);
+        spaceGroup.getChildren().add(axisLVLH);
+//        axisLVLH.setTranslateZ(-180);
 
         world.getChildren().addAll(spaceGroup);
 
@@ -266,70 +293,66 @@ public class AniQuat extends Application {
             qj.add(j, parseDouble(parts[1]));
             qk.add(j, parseDouble(parts[2]));
             ql.add(j, parseDouble(parts[3]));
+            x.add(j, parseDouble(parts[7]));
+            y.add(j, parseDouble(parts[8]));
+            z.add(j, parseDouble(parts[9]));
+            vx.add(j, parseDouble(parts[10]));
+            vy.add(j, parseDouble(parts[11]));
+            vz.add(j, parseDouble(parts[12]));
         }
 
         j++;
 
-        Duration duration = Duration.millis(100);
+        Duration duration = Duration.millis(5);
         EventHandler onFinished = t -> {
 //            j = 1;
             double qw = qi.get(j);
             double qx = qj.get(j);
             double qy = qk.get(j);
             double qz = ql.get(j);
-            // Variant
-//            double test = qx * qy + qz * qw;
-//            double heading, attitude, bank;
-//            if (test > 0.499) { // singularity at north pole
-//                heading = 2 * Math.atan2(qx, qw);
-//                attitude = Math.PI / 2;
-//                bank = 0;
-//                return;
-//            }
-//            if (test < -0.499) { // singularity at south pole
-//                heading = -2 * Math.atan2(qx, qw);
-//                attitude = -Math.PI / 2;
-//                bank = 0;
-//                return;
-//            }
-//            double sqx = qx * qx;
-//            double sqy = qy * qy;
-//            double sqz = qz * qz;
-//            heading = Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * sqy - 2 * sqz);
-//            attitude = Math.asin(2 * test);
-//            bank = Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * sqx - 2 * sqz);
 
-//            stack.getTransforms().add(rynnBox);
-//            stack.getTransforms().add(rznnBox);
-//            stack.getTransforms().add(rxnnBox);
+            Quaternion first = new Quaternion(qw, qx, qy, qz);
+            first = Quaternion.normalize(first);
+//            first = Quaternion.conjugate(first);
+//            System.out.println("!!!");
+//            System.out.println(first);
+            List rECI = new ArrayList<>();
+            Collections.addAll(rECI, x.get(j), y.get(j), z.get(j));
+            List vECI = new ArrayList<>();
+            Collections.addAll(vECI, vx.get(j), vy.get(j), vz.get(j));
 
-            // Variant
-//            Quaternion q = new Quaternion(qw, qx, qy, qz);
-//            ArrayList<Double> eulerAngles = Quaternion.mavlink_quaternion_to_euler(q);
-//            double phi = bank;
-//            double theta = heading;
-//            double psi = attitude;
-//
-//            double A11 = Math.cos(psi) * Math.cos(theta);
-//            double A12 = Math.cos(phi) * Math.sin(psi) + Math.cos(psi) * Math.sin(phi) * Math.sin(theta);
-//            double A13 = Math.sin(psi) * Math.sin(phi) - Math.cos(psi) * Math.cos(phi) * Math.sin(theta);
-//            double A21 = -Math.cos(theta) * Math.sin(psi);
-//            double A22 = Math.cos(psi) * Math.cos(phi) - Math.sin(psi) * Math.sin(phi) * Math.sin(theta);
-//            double A23 = Math.cos(psi) * Math.sin(phi) + Math.cos(phi) * Math.sin(psi) * Math.sin(theta);
-//            double A31 = Math.sin(theta);
-//            double A32 = -Math.cos(theta) * Math.sin(phi);
-//            double A33 = Math.cos(phi) * Math.cos(theta);
-//
-//            double d = Math.acos((A11 + A22 + A33 - 1d) / 2d);
-//            if (d != 0d) {
-//                double den = 2d * Math.sin(d);
-//                Point3D p = new Point3D((A32 - A23) / den, (A13 - A31) / den, (A21 - A12) / den);
-//                stack.setRotationAxis(p);
-//                stack.setRotate(Math.toDegrees(d));
-//            }
+            List<Double> zNew = VectorsAlgebra.invert(VectorsAlgebra.normalize(rECI));
+            List<Double> yNew = VectorsAlgebra.normalize(VectorsAlgebra.multV(zNew, vECI));
+            List<Double> xNew = VectorsAlgebra.multV(yNew, zNew);
+
+            Quaternion second = Quaternion.fromRotationMatrix(xNew.get(0), xNew.get(1), xNew.get(2), yNew.get(0),
+                    yNew.get(1), yNew.get(2), zNew.get(0), zNew.get(1), zNew.get(2));
+            second = Quaternion.conjugate(second);
+//            System.out.println(second);
+            second = Quaternion.normalize(second);
+
+//            Quaternion fin = Quaternion.quatMultQuat(first, second);
+//            Quaternion fin = Quaternion.quatMultQuat(second, first);
+//            fin = Quaternion.normalize(fin);
+//            System.out.println(fin);
+
+//            qw = fin.i;
+//            qx = fin.j;
+//            qy = fin.k;
+//            qz = fin.l;
+
+            double qwa = second.i;
+            double qxa = second.j;
+            double qya = second.k;
+            double qza = second.l;
+
+            double mod = Math.sqrt(qxa * qxa + qya * qya + qza * qza);
+            Point3D pAxis = new Point3D(qxa / mod, qya / mod, qza / mod);
+            double angleAxis = 2 * Math.acos(qwa);
+            axisLVLH.setRotationAxis(pAxis);
+            axisLVLH.setRotate(Math.toDegrees(angleAxis));
 
             double abs = Math.sqrt(qx * qx + qy * qy + qz * qz);
-//            Point3D p = new Point3D(-qx / abs, -qy / abs, -qz / abs);
             Point3D p = new Point3D(qx / abs, qy / abs, qz / abs);
             double angle = 2 * Math.acos(qw);
             stack.setRotationAxis(p);
@@ -394,7 +417,7 @@ public class AniQuat extends Application {
         buildSpace(path);
 
         Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.web("#000028"));
+//        scene.setFill(Color.web("#000028"));
         handleMouse(scene);
 
         primaryStage.setTitle("Animation");

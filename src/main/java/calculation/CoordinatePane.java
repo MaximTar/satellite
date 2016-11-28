@@ -1,13 +1,17 @@
 package calculation;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -21,6 +25,7 @@ import java.util.*;
 public class CoordinatePane extends GridPane {
 
     private Scene resultScene;
+    Group root = new Group();
 
     //    private TextField t0Input = new TextField("0");
 //    private TextField dtInput = new TextField("1000");
@@ -32,14 +37,36 @@ public class CoordinatePane extends GridPane {
 //    private TextField y0Input = new TextField("4.2E7");
 //    private TextField z0Input = new TextField("0.0");
     private TextField t0Input = new TextField("0");
-    private TextField dtInput = new TextField("1000");
-    private TextField tMaxInput = new TextField("86500");
-    private TextField Vx0Input = new TextField("-883.923");
-    private TextField Vy0Input = new TextField("317.338");
-    private TextField Vz0Input = new TextField("7610.832");
-    private TextField x0Input = new TextField("-2290301.063");
-    private TextField y0Input = new TextField("-6379471.940");
+    //    private TextField dtInput = new TextField("1000");
+    private TextField dtInput = new TextField("1");
+    //    private TextField tMaxInput = new TextField("86500");
+    private TextField tMaxInput = new TextField("10000");
+    //    private TextField Vx0Input = new TextField("-883.923");
+    private TextField Vx0Input = new TextField("0.0");
+    //    private TextField Vy0Input = new TextField("317.338");
+    private TextField Vy0Input = new TextField("7713.0");
+    //    private TextField Vz0Input = new TextField("7610.832");
+    private TextField Vz0Input = new TextField("0.0");
+    //    private TextField x0Input = new TextField("-2290301.063");
+    private TextField x0Input = new TextField("6700000.0");
+    //    private TextField y0Input = new TextField("-6379471.940");
+    private TextField y0Input = new TextField("0.0");
     private TextField z0Input = new TextField("0.0");
+    private TextField JxxInput = new TextField("10.0");
+    private TextField JyyInput = new TextField("100.0");
+    private TextField JzzInput = new TextField("100.0");
+    private TextField qxInput = new TextField("0.0");
+    private TextField qyInput = new TextField("0.0");
+    private TextField qzInput = new TextField("0.0");
+    private TextField qwInput = new TextField("1.0");
+    private TextField wxInput = new TextField("0.0");
+    private TextField wyInput = new TextField("0.0");
+    private TextField wzInput = new TextField("0.00115");
+    CheckBox checkBoxGeoPot = new CheckBox();
+    CheckBox checkBoxSunGravity = new CheckBox();
+    CheckBox checkBoxMoonGravity = new CheckBox();
+    CheckBox checkBoxSunPres = new CheckBox();
+    CheckBox checkBoxDrag = new CheckBox();
 
     public CoordinatePane(Stage mainWindow) {
         setPadding(new Insets(15, 15, 15, 15));
@@ -56,12 +83,147 @@ public class CoordinatePane extends GridPane {
         Label y0Label = new Label("y0:");
         Label z0Label = new Label("z0:");
 
+        t0Input.setMinWidth(200);
+        dtInput.setMinWidth(200);
+        tMaxInput.setMinWidth(200);
+        Vx0Input.setMinWidth(200);
+        Vy0Input.setMinWidth(200);
+        Vz0Input.setMinWidth(200);
+
         addRow(0, t0Label, t0Input, vx0Label, Vx0Input, x0Label, x0Input);
         addRow(1, dtLabel, dtInput, vy0Label, Vy0Input, y0Label, y0Input);
         addRow(2, tMaxLabel, tMaxInput, vz0Label, Vz0Input, z0Label, z0Input);
 
+        ToggleGroup toggleGroupInitialOrbit = new ToggleGroup();
+        RadioButton buttonISS = new RadioButton("ISS");
+        buttonISS.setToggleGroup(toggleGroupInitialOrbit);
+        RadioButton buttonSunSync = new RadioButton("Sun-Sync");
+        buttonSunSync.setToggleGroup(toggleGroupInitialOrbit);
+        RadioButton buttonGPS = new RadioButton("GPS");
+        buttonGPS.setToggleGroup(toggleGroupInitialOrbit);
+        RadioButton buttonMolniya = new RadioButton("Molniya");
+        buttonMolniya.setToggleGroup(toggleGroupInitialOrbit);
+        RadioButton buttonGEO = new RadioButton("GEO");
+        buttonGEO.setToggleGroup(toggleGroupInitialOrbit);
+        RadioButton buttonExperiment = new RadioButton("Experimental");
+        buttonExperiment.setToggleGroup(toggleGroupInitialOrbit);
+        buttonExperiment.setSelected(true);
+        RadioButton buttonUserDefined = new RadioButton("User Defined");
+        buttonUserDefined.setToggleGroup(toggleGroupInitialOrbit);
+
+        x0Input.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (x0Input.isFocused()) {
+                    buttonUserDefined.setSelected(true);
+                }
+            }
+        });
+        y0Input.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (y0Input.isFocused()) {
+                    buttonUserDefined.setSelected(true);
+                }
+            }
+        });
+        z0Input.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (z0Input.isFocused()) {
+                    buttonUserDefined.setSelected(true);
+                }
+            }
+        });
+        Vx0Input.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (Vx0Input.isFocused()) {
+                    buttonUserDefined.setSelected(true);
+                }
+            }
+        });
+        Vy0Input.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (Vy0Input.isFocused()) {
+                    buttonUserDefined.setSelected(true);
+                }
+            }
+        });
+        Vz0Input.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (Vz0Input.isFocused()) {
+                    buttonUserDefined.setSelected(true);
+                }
+            }
+        });
+
+        toggleGroupInitialOrbit.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (buttonISS.isSelected()) {
+                    getX0Input().setText(String.valueOf(-4453783.586));
+                    getY0Input().setText(String.valueOf(-5038203.756));
+                    getZ0Input().setText(String.valueOf(-426384.456));
+                    getVx0Input().setText(String.valueOf(3831.888));
+                    getVy0Input().setText(String.valueOf(-2887.221));
+                    getVz0Input().setText(String.valueOf(-6018.232));
+                } else if (buttonSunSync.isSelected()) {
+                    getX0Input().setText(String.valueOf(-2290301.063));
+                    getY0Input().setText(String.valueOf(-6379471.940));
+                    getZ0Input().setText(String.valueOf(0.0));
+                    getVx0Input().setText(String.valueOf(-0883.923));
+                    getVy0Input().setText(String.valueOf(0317.338));
+                    getVz0Input().setText(String.valueOf(7610.832));
+                } else if (buttonGPS.isSelected()) {
+                    getX0Input().setText(String.valueOf(5525336.68));
+                    getY0Input().setText(String.valueOf(-15871184.94));
+                    getZ0Input().setText(String.valueOf(-20998992.446));
+                    getVx0Input().setText(String.valueOf(2750.341));
+                    getVy0Input().setText(String.valueOf(2434.198));
+                    getVz0Input().setText(String.valueOf(-1068.884));
+                } else if (buttonMolniya.isSelected()) {
+                    getX0Input().setText(String.valueOf(-1529894.287));
+                    getY0Input().setText(String.valueOf(-2672877.357));
+                    getZ0Input().setText(String.valueOf(-6150115.340));
+                    getVx0Input().setText(String.valueOf(8717.518));
+                    getVy0Input().setText(String.valueOf(-4989.709));
+                    getVz0Input().setText(String.valueOf(0.0));
+                } else if (buttonGEO.isSelected()) {
+                    getX0Input().setText(String.valueOf(36607358.256));
+                    getY0Input().setText(String.valueOf(-20921723.703));
+                    getZ0Input().setText(String.valueOf(0.0));
+                    getVx0Input().setText(String.valueOf(1525.636));
+                    getVy0Input().setText(String.valueOf(2669.451));
+                    getVz0Input().setText(String.valueOf(0.0));
+                } else if (buttonExperiment.isSelected()) {
+                    getX0Input().setText(String.valueOf(6700000.0));
+                    getY0Input().setText(String.valueOf(0.0));
+                    getZ0Input().setText(String.valueOf(0.0));
+                    getVx0Input().setText(String.valueOf(0.0));
+                    getVy0Input().setText(String.valueOf(7713.0));
+                    getVz0Input().setText(String.valueOf(0.0));
+                } else if (buttonUserDefined.isSelected()) {
+                    getX0Input().setText(String.valueOf(0.0));
+                    getY0Input().setText(String.valueOf(0.0));
+                    getZ0Input().setText(String.valueOf(0.0));
+                    getVx0Input().setText(String.valueOf(0.0));
+                    getVy0Input().setText(String.valueOf(0.0));
+                    getVz0Input().setText(String.valueOf(0.0));
+                }
+            }
+        });
+
+        HBox hBoxOrbitToggle = new HBox(20);
+        hBoxOrbitToggle.getChildren().addAll(buttonISS, buttonSunSync, buttonGPS, buttonMolniya, buttonGEO, buttonExperiment, buttonUserDefined);
+        setColumnSpan(hBoxOrbitToggle, 6);
+        addRow(3, hBoxOrbitToggle);
+        hBoxOrbitToggle.setAlignment(Pos.CENTER);
+
         Button startButton = new Button("Start");
-        add(startButton, 0, 3, 6, 1);
+        add(startButton, 0, 4, 6, 1);
         setHalignment(startButton, HPos.CENTER);
 
         startButton.setOnAction(event -> {
@@ -83,9 +245,30 @@ public class CoordinatePane extends GridPane {
                         NumberUtils.parseTextAsDouble(x0Input), NumberUtils.parseTextAsDouble(y0Input),
                         NumberUtils.parseTextAsDouble(z0Input), NumberUtils.parseTextAsDouble(Vx0Input),
                         NumberUtils.parseTextAsDouble(Vy0Input), NumberUtils.parseTextAsDouble(Vz0Input),
+                        NumberUtils.parseTextAsDouble(qwInput), NumberUtils.parseTextAsDouble(qxInput),
+                        NumberUtils.parseTextAsDouble(qyInput), NumberUtils.parseTextAsDouble(qzInput),
+                        NumberUtils.parseTextAsDouble(wxInput), NumberUtils.parseTextAsDouble(wyInput),
+                        NumberUtils.parseTextAsDouble(wzInput), NumberUtils.parseTextAsDouble(JxxInput),
+                        NumberUtils.parseTextAsDouble(JyyInput), NumberUtils.parseTextAsDouble(JzzInput),
+                        checkBoxGeoPot.isSelected(), checkBoxSunGravity.isSelected(), checkBoxMoonGravity.isSelected(),
+                        checkBoxSunPres.isSelected(), checkBoxDrag.isSelected()
 //                        0.6830127018922193, -0.1830127018922193, 0.6830127018922193, 0.1830127018922193, -0.00115, 0, 0
-                        0.9961946980917455, 0, 0, 0.08715574274765817, 0, 0, 0.00115
-//                        1, 0, 0, 0, 1, 0.3, 0
+//                        0.9961946980917455, 0, 0, 0.08715574274765817, 0, 0, 0.00115  //10
+//                        0.9961946980917455, 0, 0, 0, 0, 0, 0.00115  //10
+//                        0.9659258262890683, 0, 0, 0.25881904510252074, 0, 0, 0.00115  //30
+//                        0.9993908270190958, 0, 0, 0.03489949670250097, 0, 0, 0.00115  //4
+//                        0.9993908270190958, 0, 0.03489949670250097, 0, 0, 0, -0.00115  //4
+//                        0.9993908270190958, 0, 0.03489949670250097, 0, 0, -0.00115, 0  //4
+//                        0.9993908270190958, 0.03489949670250097, 0, 0, -0.00115, 0, 0  //4
+//                        0.9993908270190958, 0.03489949670250097, 0, 0, -0.00115, 0, 0  //4
+//                        0.9993908270190958, 0, 0.03489949670250097, 0, 0, -0.00115, 0  //4
+//                        0.999,  0.001, 0.035, 0.035, 0, 0, -0.00115  //4 + 4
+//                        1, 0, 0, 0, 0.00115, 0, 0
+//                        1, 0, 0, 0, 0, 0.1, 0.5
+//                        1, 0, 0, 0, 0, 0.001, 0.05
+//                        1, 0, 0, 0, 0.05, 0.001, 0
+//                        1, 0, 0, 0, 0, 0, 0.00115
+//                        1, 0, 0, 0, 0, 0, 0
                 );
 
                 List<Double> x = result.get(0);
@@ -129,7 +312,7 @@ public class CoordinatePane extends GridPane {
         });
 
         Button conversionToKeplerButton = new Button("Conversion To Kepler");
-        add(conversionToKeplerButton, 0, 4, 6, 1);
+        add(conversionToKeplerButton, 0, 5, 6, 1);
         setHalignment(conversionToKeplerButton, HPos.CENTER);
 
         conversionToKeplerButton.setOnAction(event -> {
@@ -178,22 +361,22 @@ public class CoordinatePane extends GridPane {
         minuteSpinner.setMaxWidth(50);
 //        minuteSpinner.setEditable(true);
 
-        Button conversionToECIButton = new Button("Conversion To ECI");
+        Button conversionToECEFButton = new Button("Conversion To ECEF");
 
-        HBox hBox = new HBox(3);
-        hBox.getChildren().addAll(checkboxLabelPrecession, checkBoxPrecession, checkboxLabelNutation, checkBoxNutation, checkboxLabelER,
+        HBox hBoxECEFECI = new HBox(3);
+        hBoxECEFECI.getChildren().addAll(checkboxLabelPrecession, checkBoxPrecession, checkboxLabelNutation, checkBoxNutation, checkboxLabelER,
                 checkBoxER, checkboxLabelPM, checkBoxPM);
-        setColumnSpan(hBox, 6);
-        addRow(5, hBox);
-        hBox.setAlignment(Pos.CENTER);
+        setColumnSpan(hBoxECEFECI, 6);
+        addRow(6, hBoxECEFECI);
+        hBoxECEFECI.setAlignment(Pos.CENTER);
 
-        HBox hBox6row = new HBox(10);
-        hBox6row.getChildren().addAll(datePicker, hourLabel, hourSpinner, minuteLabel, minuteSpinner, conversionToECIButton);
-        setColumnSpan(hBox6row, 6);
-        addRow(6, hBox6row);
-        hBox6row.setAlignment(Pos.CENTER);
+        HBox hBoxECEFECI2 = new HBox(10);
+        hBoxECEFECI2.getChildren().addAll(datePicker, hourLabel, hourSpinner, minuteLabel, minuteSpinner, conversionToECEFButton);
+        setColumnSpan(hBoxECEFECI2, 6);
+        addRow(7, hBoxECEFECI2);
+        hBoxECEFECI2.setAlignment(Pos.CENTER);
 
-        conversionToECIButton.setOnAction(event -> {
+        conversionToECEFButton.setOnAction(event -> {
 
             Calendar c = new GregorianCalendar(datePicker.getValue().getYear(), datePicker.getValue().getMonth().getValue(),
                     datePicker.getValue().getDayOfMonth() - 1, hourSpinner.getValue(), minuteSpinner.getValue());
@@ -202,28 +385,28 @@ public class CoordinatePane extends GridPane {
             ArrayList<ArrayList<Double>> nutation = Matrix.identityMatrix(3);
             ArrayList<ArrayList<Double>> earthRotation = Matrix.identityMatrix(3);
             ArrayList<ArrayList<Double>> pole = Matrix.identityMatrix(3);
-            if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
-                precession = Matrix.transpose(EcefEci.precessionMatrix(c));
-            } else if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+            if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
                 precession = EcefEci.precessionMatrix(c);
+            } else if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
+                precession = Matrix.transpose(EcefEci.precessionMatrix(c));
             }
-            if (checkBoxNutation.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
-                nutation = Matrix.transpose(EcefEci.nutationMatrix(c));
-            } else if (checkBoxNutation.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+            if (checkBoxNutation.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
                 nutation = EcefEci.nutationMatrix(c);
+            } else if (checkBoxNutation.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
+                nutation = Matrix.transpose(EcefEci.nutationMatrix(c));
             }
-            if (checkBoxER.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
-                earthRotation = Matrix.transpose(EcefEci.rotationMatrix(c));
-            } else if (checkBoxER.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+            if (checkBoxER.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
                 earthRotation = EcefEci.rotationMatrix(c);
+            } else if (checkBoxER.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
+                earthRotation = Matrix.transpose(EcefEci.rotationMatrix(c));
             }
 
-            System.out.println(earthRotation);
+//            System.out.println(earthRotation);
 
-            if (checkBoxPM.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
-                pole = Matrix.transpose(EcefEci.poleMatrix(c));
-            } else if (checkBoxPM.isSelected() && Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
+            if (checkBoxPM.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
                 pole = EcefEci.poleMatrix(c);
+            } else if (checkBoxPM.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
+                pole = Matrix.transpose(EcefEci.poleMatrix(c));
             }
 
             ArrayList<Double> initialCoordinates = new ArrayList<>();
@@ -235,12 +418,21 @@ public class CoordinatePane extends GridPane {
             ArrayList<ArrayList<Double>> newCoordinates = new ArrayList<>();
             ArrayList<ArrayList<Double>> newVelocities = new ArrayList<>();
 
-            ArrayList<ArrayList<Double>> help = new ArrayList<>();
-            help.add(initialCoordinates);
-            newCoordinates = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(pole, earthRotation), nutation), precession), Matrix.transpose(help));
-            help.clear();
-            help.add(initialVelocities);
-            newVelocities = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(pole, earthRotation), nutation), precession), Matrix.transpose(help));
+            if (checkBoxPM.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
+                ArrayList<ArrayList<Double>> help = new ArrayList<>();
+                help.add(initialCoordinates);
+                newCoordinates = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(pole, earthRotation), nutation), precession), Matrix.transpose(help));
+                help.clear();
+                help.add(initialVelocities);
+                newVelocities = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(pole, earthRotation), nutation), precession), Matrix.transpose(help));
+            } else if (checkBoxPM.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
+                ArrayList<ArrayList<Double>> help = new ArrayList<>();
+                help.add(initialCoordinates);
+                newCoordinates = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(precession, nutation), earthRotation), pole), Matrix.transpose(help));
+                help.clear();
+                help.add(initialVelocities);
+                newVelocities = Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(Matrix.matrixMult(precession, nutation), earthRotation), pole), Matrix.transpose(help));
+            }
 
             getVx0Input().setText(String.valueOf(newVelocities.get(0).get(0)));
             getVy0Input().setText(String.valueOf(newVelocities.get(1).get(0)));
@@ -249,13 +441,69 @@ public class CoordinatePane extends GridPane {
             getY0Input().setText(String.valueOf(newCoordinates.get(1).get(0)));
             getZ0Input().setText(String.valueOf(newCoordinates.get(2).get(0)));
 
-            if (Objects.equals(conversionToECIButton.getText(), "Conversion To ECI")) {
-                conversionToECIButton.setText("Conversion To ECEF");
-            } else if (Objects.equals(conversionToECIButton.getText(), "Conversion To ECEF")) {
-                conversionToECIButton.setText("Conversion To ECI");
+            if (Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
+                conversionToECEFButton.setText("Conversion To ECI");
+            } else if (Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
+                conversionToECEFButton.setText("Conversion To ECEF");
             }
 
         });
+
+        HBox hBoxFirstBody1 = new HBox(20);
+//        TextFieldTableCell J = new TextFieldTableCell(); // Try to fill like matrix
+//        hBoxFirstBody.getChildren().addAll(J);
+        Label jxxLabel = new Label("Jxx:");
+        Label jyyLabel = new Label("Jyy:");
+        Label jzzLabel = new Label("Jzz:");
+        JxxInput.setMaxWidth(100);
+        JyyInput.setMaxWidth(100);
+        JzzInput.setMaxWidth(100);
+        hBoxFirstBody1.getChildren().addAll(jxxLabel, JxxInput, jyyLabel, JyyInput, jzzLabel, JzzInput);
+        setColumnSpan(hBoxFirstBody1, 6);
+        addRow(9, hBoxFirstBody1);
+        hBoxFirstBody1.setAlignment(Pos.CENTER);
+
+        HBox hBoxFirstBody2 = new HBox(10);
+        Label qwLabel = new Label("qw:");
+        Label qxLabel = new Label("qx:");
+        Label qyLabel = new Label("qy:");
+        Label qzLabel = new Label("qz:");
+        hBoxFirstBody2.getChildren().addAll(qwLabel, qwInput, qxLabel, qxInput, qyLabel, qyInput, qzLabel, qzInput);
+        setColumnSpan(hBoxFirstBody2, 6);
+        addRow(10, hBoxFirstBody2);
+        hBoxFirstBody2.setAlignment(Pos.CENTER);
+
+        HBox hBoxFirstBody3 = new HBox(10);
+        Label wxLabel = new Label("wx:");
+        Label wyLabel = new Label("wy:");
+        Label wzLabel = new Label("wz:");
+        hBoxFirstBody3.getChildren().addAll(wxLabel, wxInput, wyLabel, wyInput, wzLabel, wzInput);
+        setColumnSpan(hBoxFirstBody3, 6);
+        addRow(11, hBoxFirstBody3);
+        hBoxFirstBody3.setAlignment(Pos.CENTER);
+
+        Label checkboxLabelGeoPot = new Label("GeoPotential:");
+        checkboxLabelGeoPot.setLabelFor(checkBoxGeoPot);
+        checkboxLabelGeoPot.setOnMouseClicked(e -> checkBoxGeoPot.setSelected(!checkBoxGeoPot.isSelected()));
+        Label checkboxLabelSunGravity = new Label("   Sun's gravity:");
+        checkboxLabelSunGravity.setLabelFor(checkBoxSunGravity);
+        checkboxLabelSunGravity.setOnMouseClicked(e -> checkBoxSunGravity.setSelected(!checkBoxSunGravity.isSelected()));
+        Label checkboxLabelMoonGravity = new Label("   Moon's Gravity:");
+        checkboxLabelMoonGravity.setLabelFor(checkBoxMoonGravity);
+        checkboxLabelMoonGravity.setOnMouseClicked(e -> checkBoxMoonGravity.setSelected(!checkBoxMoonGravity.isSelected()));
+        Label checkboxLabelSunPres = new Label("   Sun's radiation pressure:");
+        checkboxLabelSunPres.setLabelFor(checkBoxSunPres);
+        checkboxLabelSunPres.setOnMouseClicked(e -> checkBoxSunPres.setSelected(!checkBoxSunPres.isSelected()));
+        Label checkboxLabelDrag = new Label("   Atmospheric Drag:");
+        checkboxLabelDrag.setLabelFor(checkBoxDrag);
+        checkboxLabelDrag.setOnMouseClicked(e -> checkBoxDrag.setSelected(!checkBoxDrag.isSelected()));
+        HBox hBoxDisturbances = new HBox(10);
+        hBoxDisturbances.getChildren().addAll(checkboxLabelGeoPot, checkBoxGeoPot,
+                checkboxLabelSunGravity, checkBoxSunGravity, checkboxLabelMoonGravity, checkBoxMoonGravity,
+                checkboxLabelSunPres, checkBoxSunPres, checkboxLabelDrag, checkBoxDrag);
+        setColumnSpan(hBoxDisturbances, 6);
+        addRow(12, hBoxDisturbances);
+        hBoxDisturbances.setAlignment(Pos.CENTER);
     }
 
     public TextField getVx0Input() {

@@ -57,4 +57,8 @@ public class VectorsAlgebra {
         Collections.addAll(c, a.get(0) + b.get(0), a.get(1) + b.get(1), a.get(2) + b.get(2));
         return c;
     }
+
+    public static List<Double> invert (List<Double> a) {
+        return a.stream().map(anA -> -anA).collect(Collectors.toList());
+    }
 }

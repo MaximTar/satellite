@@ -36,7 +36,7 @@ public class Main extends Application {
 
         CoordinatePane gridCoordinate = new CoordinatePane(mainWindow);
         startCoordinateButton.setOnAction(event -> {
-            startCoordinateScene = new Scene(gridCoordinate, 600, 300);
+            startCoordinateScene = new Scene(gridCoordinate, 780, 490);
             mainWindow.setScene(startCoordinateScene);
             mainWindow.show();
         });
@@ -87,10 +87,26 @@ public class Main extends Application {
         TimeZone timeZone = TimeZone.getTimeZone("GMT");
         Calendar c = Calendar.getInstance(timeZone);
 
-//        System.out.println(Math.sqrt(398600.4415E9/6700000));
+//        Quaternion L = new Quaternion(1, 2, 3, 4);
+//        Quaternion E = new Quaternion(0, 9, 8, 7);
+//        Quaternion E2 = new Quaternion(0, -9, -9, -7);
+//        Quaternion L2 = Quaternion.conjugate(L);
+//        System.out.println(Quaternion.quatMultQuat(Quaternion.quatMultQuat(L2, E), L));
+//        System.out.println(Quaternion.quatMultQuat(Quaternion.quatMultQuat(L2, E2), L));
+//        System.out.println(Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, E), L2));
+//        System.out.println(Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, E2), L2));
+//        System.out.println(Quaternion.quatMultQuat(Quaternion.quatMultQuat()));
+
+//        System.out.println(2 * Math.PI * Math.sqrt(Math.pow(6700000, 3) / 398600.4415E9));
+//        Quaternion q1 = new Quaternion(1, 2, 3, 4);
+//        Quaternion q2 = new Quaternion(0, 5, 6, 7);
+//        System.out.println(Quaternion.quatMultQuat(q1, q2));
+//        System.out.println(Quaternion.quatMultQuat(q2, q1));
+
+//        System.out.println(Math.sqrt(398600.4415E9/Math.pow(6700000, 3)));
 //        System.out.println(7713./6700000);
-//        System.out.println(Math.sin(Math.toRadians(5)));
-//        System.out.println(Math.cos(Math.toRadians(5)));
+//        System.out.println(Math.sin(Math.toRadians(15)));
+//        System.out.println(Math.cos(Math.toRadians(15)));
 //        System.out.println(Math.sin(Math.toRadians(5)) * Math.sin(Math.toRadians(5)) + Math.cos(Math.toRadians(5)) * Math.cos(Math.toRadians(5)));
 //
 //        Quaternion q1 = new Quaternion(0.7071067811865475, 0, 0.7071067811865475, 0);

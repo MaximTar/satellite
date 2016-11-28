@@ -1,5 +1,7 @@
 package utils;
 
+import calculation.CoordinatePane;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -10,6 +12,7 @@ public class CalculationUtils {
     public static File fileName;
     public static File qfileName;
     public static File fileNameFull;
+    public static double ix, iy, iz;
 
     CalculationUtils(double x, double y, double z, double vx, double vy, double vz) {
         this.x = x;
@@ -71,7 +74,7 @@ public class CalculationUtils {
         return c;
     }
 
-    public static CalculationUtils F(CalculationUtils U, double t) {
+    public static CalculationUtils F(CalculationUtils U, double t, boolean geopot, boolean sungrav, boolean moongrav, boolean sunpres, boolean drag) {
         CalculationUtils res = new CalculationUtils(0, 0, 0, 0, 0, 0);
 //        double G = 6.67 * Math.pow(10, -11);
 //        double M = 5.9726 * Math.pow(10, 24);
@@ -85,59 +88,87 @@ public class CalculationUtils {
 //        res.vx = -G * M * U.x / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
 //        res.vy = -G * M * U.y / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
 //        res.vz = -G * M * U.z / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
-
 //        Это считает точнее
         res.vx = -mu * U.x / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
         res.vy = -mu * U.y / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
         res.vz = -mu * U.z / Math.pow(Math.pow(U.x * U.x + U.y * U.y + U.z * U.z, 0.5), 3);
 
 //        Приближение по Чазову
-//        List<Double> GeoPotential = GeoPot.calc(U.x, U.y, U.z, 4);
-//        res.vx = GeoPotential.get(0);
-//        res.vy = GeoPotential.get(1);
-//        res.vz = GeoPotential.get(2);
+        if (geopot) {
+            List<Double> GeoPotential = GeoPot.calc(U.x, U.y, U.z, 4);
+            res.vx = GeoPotential.get(0);
+            res.vy = GeoPotential.get(1);
+            res.vz = GeoPotential.get(2);
+        }
 
-//        Добавки (гравитация Солнца и Луны, солнечное давление и атмосфера)
-//        double muSun = 132712440018E9;
-//        double muMoon = 4902.779E9;
-//        TimeZone timeZone = TimeZone.getTimeZone("GMT");
-//        Calendar c = Calendar.getInstance(timeZone);
-//        List<Double> sunPos = SunPosition.sunPosition(c);
-//        List<Double> moonPos = MoonPosition.moonPosition(c);
-//        List<Double> sunGravity = Gravitation.force(muSun, U.x, U.y, U.z, sunPos.get(0), sunPos.get(1), sunPos.get(2));
-//        List<Double> moonGravity = Gravitation.force(muMoon, U.x, U.y, U.z, moonPos.get(0), moonPos.get(1), moonPos.get(2));
-//        res.vx += sunGravity.get(0);
-//        res.vy += sunGravity.get(1);
-//        res.vz += sunGravity.get(2);
-//        res.vx += moonGravity.get(0);
-//        res.vy += moonGravity.get(1);
-//        res.vz += moonGravity.get(2);
-//
-//        double A = 1; // Площадь сечения
-//        double C = 1; // Передача импульса за счёт поглощения и отражения
-//        List<Double> sunPres = SunRadiationPressure.force(A, C, c);
-//        res.vx += sunPres.get(0);
-//        res.vy += sunPres.get(1);
-//        res.vz += sunPres.get(2);
-//
-//        // List<Double> lla = ECEF2LLA.conversion(U.x, U.y, U.z);
-//        double drag_coefficient = 2; // "Эмпирический коэффициент примерно равный 2"
-//        ArrayList<Double> w_earth = new ArrayList<>();
-//        Collections.addAll(w_earth, 0., 0., 7.2921158553E-5);
-//        ArrayList<Double> r = new ArrayList<>();
-//        Collections.addAll(r, U.x, U.y, U.z);
-//        List<Double> v_earth = VectorsAlgebra.multV(w_earth, r);// Поправка для нахождения относительной скорости
-//        double radv = Math.sqrt(Math.pow(U.x, 2) + Math.pow(U.y, 2) + Math.pow(U.z, 2)); // Радиус-вектор
-//
-//        res.vx += Drag.force(drag_coefficient, Drag.exponentialModelDensity(radv), U.vx - v_earth.get(0), A);
-//        res.vy += Drag.force(drag_coefficient, Drag.exponentialModelDensity(radv), U.vy - v_earth.get(1), A);
-//        res.vz += Drag.force(drag_coefficient, Drag.exponentialModelDensity(radv), U.vz - v_earth.get(2), A);
+//        Sun's Gravity
+        if (sungrav) {
+            double muSun = 132712440018E9;
+            TimeZone timeZone = TimeZone.getTimeZone("GMT");
+            Calendar c = Calendar.getInstance(timeZone);
+            List<Double> sunPos = SunPosition.sunPosition(c);
+            List<Double> sunGravity = Gravitation.force(muSun, U.x, U.y, U.z, sunPos.get(0), sunPos.get(1), sunPos.get(2));
+            res.vx += sunGravity.get(0);
+            res.vy += sunGravity.get(1);
+            res.vz += sunGravity.get(2);
+        }
+
+//        Moon's Gravity
+        if (moongrav) {
+            double muMoon = 4902.779E9;
+            TimeZone timeZone = TimeZone.getTimeZone("GMT");
+            Calendar c = Calendar.getInstance(timeZone);
+            List<Double> moonPos = MoonPosition.moonPosition(c);
+            List<Double> moonGravity = Gravitation.force(muMoon, U.x, U.y, U.z, moonPos.get(0), moonPos.get(1), moonPos.get(2));
+            res.vx += moonGravity.get(0);
+            res.vy += moonGravity.get(1);
+            res.vz += moonGravity.get(2);
+        }
+
+//        Sun's Radiation Pressure
+        if (sunpres) {
+            double A = 1; // Площадь сечения
+            double C = 1; // Передача импульса за счёт поглощения и отражения
+            TimeZone timeZone = TimeZone.getTimeZone("GMT");
+            Calendar c = Calendar.getInstance(timeZone);
+            List<Double> sunPres = SunRadiationPressure.force(A, C, c);
+            res.vx += sunPres.get(0);
+            res.vy += sunPres.get(1);
+            res.vz += sunPres.get(2);
+        }
+
+//        Atmospheric Drag
+        if (drag) {
+            double A = 1; // Площадь сечения
+            // List<Double> lla = ECEF2LLA.conversion(U.x, U.y, U.z);
+            double drag_coefficient = 2; // "Эмпирический коэффициент примерно равный 2"
+            ArrayList<Double> w_earth = new ArrayList<>();
+            Collections.addAll(w_earth, 0., 0., 7.2921158553E-5);
+            ArrayList<Double> r = new ArrayList<>();
+            Collections.addAll(r, U.x, U.y, U.z);
+            List<Double> v_earth = VectorsAlgebra.multV(w_earth, r);// Поправка для нахождения относительной скорости
+            double radv = Math.sqrt(Math.pow(U.x, 2) + Math.pow(U.y, 2) + Math.pow(U.z, 2)); // Радиус-вектор
+
+            res.vx += Drag.force(drag_coefficient, Drag.exponentialModelDensity(radv), U.vx - v_earth.get(0), A);
+            res.vy += Drag.force(drag_coefficient, Drag.exponentialModelDensity(radv), U.vy - v_earth.get(1), A);
+            res.vz += Drag.force(drag_coefficient, Drag.exponentialModelDensity(radv), U.vz - v_earth.get(2), A);
+        }
+
+
 
         return (res);
     }
 
-    public static List<List<Double>> calculate(double tM, double dtM, double tMaxM, double xM, double yM, double zM, double VxM, double VyM, double VzM,
-                                               double l0, double l1, double l2, double l3, double wx, double wy, double wz) {
+    public static List<List<Double>> calculate(double tM, double dtM, double tMaxM, double xM, double yM, double zM,
+                                               double VxM, double VyM, double VzM,
+                                               double l0, double l1, double l2, double l3,
+                                               double wx, double wy, double wz,
+                                               double jxx, double jyy, double jzz,
+                                               boolean geoPot, boolean sunGravity, boolean moonGravity, boolean sunPres, boolean drag) {
+        ix = jxx;
+        iy = jyy;
+        iz = jzz;
+
         List<Double> xList = new ArrayList<>();
         List<Double> yList = new ArrayList<>();
         List<Double> zList = new ArrayList<>();
@@ -160,16 +191,15 @@ public class CalculationUtils {
         ArrayList<Double> wxList = new ArrayList<>();
         ArrayList<Double> wyList = new ArrayList<>();
         ArrayList<Double> wzList = new ArrayList<>();
-        Quaternion Q = new Quaternion(l0, l1, l2, l3, wx, wy, wz, 0);
+        Quaternion Q = new Quaternion(l0, l1, l2, l3, wx, wy, wz);
         Quaternion q1, q2, q3, q4;
         qfileName = new File("Quaternion_" + dateFormat.format(d) + ".txt");
 
         while (tM <= tMaxM) {
-//            System.out.println(tM);
-            k1 = mult(F(U, tM), dtM);
-            k2 = mult(F(sum(U, mult(0.5, k1)), tM + 0.5 * dtM), dtM);
-            k3 = mult(F(sum(U, mult(0.5, k2)), tM + 0.5 * dtM), dtM);
-            k4 = mult(F(sum(U, k3), tM + dtM), dtM);
+            k1 = mult(F(U, tM, geoPot, sunGravity, moonGravity, sunPres, drag), dtM);
+            k2 = mult(F(sum(U, mult(0.5, k1)), tM + 0.5 * dtM, geoPot, sunGravity, moonGravity, sunPres, drag), dtM);
+            k3 = mult(F(sum(U, mult(0.5, k2)), tM + 0.5 * dtM, geoPot, sunGravity, moonGravity, sunPres, drag), dtM);
+            k4 = mult(F(sum(U, k3), tM + dtM, geoPot, sunGravity, moonGravity, sunPres, drag), dtM);
             U = sum(U, mult(1.0 / 6.0, sum(sum(k1, mult(2, k2)), sum(mult(2, k3), k4))));
             xList.add(U.x);
             yList.add(U.y);
@@ -194,26 +224,25 @@ public class CalculationUtils {
             tM += dtM;
 
             Quaternion N = Quaternion.normalize(Q);
-            //Quaternion N = Q;
 
             String qtext = String.valueOf(N.i) + "\t\t\t" + String.valueOf(N.j) + "\t\t\t" + String.valueOf(N.k) + "\t\t\t" + String.valueOf(N.l)
 //                    + "\n";
-            + "\t\t\t" + String.valueOf(Q.wx) + "\t\t\t" + String.valueOf(Q.wy) + "\t\t\t" + String.valueOf(Q.wz)
+                    + "\t\t\t" + String.valueOf(Q.wx) + "\t\t\t" + String.valueOf(Q.wy) + "\t\t\t" + String.valueOf(Q.wz)
 //                    + "\n";
-                    + "\t\t\t" + String.valueOf(N.i * N.i + N.j * N.j + N.k * N.k + N.l * N.l) + "\n";
+//                    + "\t\t\t" + String.valueOf(N.i * N.i + N.j * N.j + N.k * N.k + N.l * N.l)
+//                    + "\n";
+                    + "\t\t\t" + String.valueOf(U.x) + "\t\t\t" + String.valueOf(U.y) + "\t\t\t" + String.valueOf(U.z)
+                    + "\t\t\t" + String.valueOf(U.vx) + "\t\t\t" + String.valueOf(U.vy) + "\t\t\t" + String.valueOf(U.vz)
+                    +"\n";
             write(qfileName.getName(), qtext);
 
-            String text = String.valueOf(U.x) + "\t\t\t" + String.valueOf(U.y) + "\t\t\t" + String.valueOf(U.z) + "\t\t\t" + String.valueOf(U.vx) + "\t\t\t" + String.valueOf(U.vy) + "\t\t\t" + String.valueOf(U.vz) + "\n";
+            String text = String.valueOf(U.x) + "\t\t\t" + String.valueOf(U.y) + "\t\t\t" + String.valueOf(U.z) + "\t\t\t" + String.valueOf(U.vx)
+                    + "\t\t\t" + String.valueOf(U.vy) + "\t\t\t" + String.valueOf(U.vz) + "\t\t\t" + String.valueOf(Math.sqrt(U.x * U.x + U.y * U.y + U.z * U.z)) + "\n";
             write(fileName.getName(), text);
         }
 
         Collections.addAll(resList, xList, yList, zList, vxList, vyList, vzList);
-//        resList.add(xList);
-//        resList.add(yList);
-//        resList.add(zList);
-//        resList.add(vxList);
-//        resList.add(vyList);
-//        resList.add(vzList);
+
         return (resList);
     }
 
@@ -223,5 +252,17 @@ public class CalculationUtils {
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    public static double getJxx () {
+        return ix;
+    }
+
+    public static double getJyy () {
+        return iy;
+    }
+
+    public static double getJzz () {
+        return iz;
     }
 }

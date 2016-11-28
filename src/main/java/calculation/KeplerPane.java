@@ -76,7 +76,7 @@ public class KeplerPane extends GridPane {
                         NumberUtils.parseTextAsDouble(Kt0Input), NumberUtils.parseTextAsDouble(KdtInput),
                         NumberUtils.parseTextAsDouble(KtMaxInput), subresult.get(0), subresult.get(1),
                         subresult.get(2), subresult.get(3), subresult.get(4), subresult.get(5),
-                        1, 0, 0, 0, 0, 0, 0
+                        1, 0, 0, 0, 0, 0, 0, 10, 100, 100, true, true, true, true, true
                 );
 
                 List<Double> x = result.get(0);

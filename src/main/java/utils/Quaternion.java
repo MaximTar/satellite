@@ -1,11 +1,10 @@
 package utils;
 
+import calculation.CoordinatePane;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Maxim Tarasov on 06.10.2016.
@@ -14,9 +13,11 @@ public class Quaternion {
 
     public double i, j, k, l, wx, wy, wz, M;
     public static File fileName;
-    public static double ix = 1;
-    public static double iy = 10;
-    public static double iz = 10;
+    public static double ix = CalculationUtils.getJxx();
+    public static double iy = CalculationUtils.getJyy();
+    public static double iz = CalculationUtils.getJzz();
+
+//    public double qsfdsf = CoordinatePane
 
     public Quaternion(double i, double j, double k, double l) {
         this.i = i;
@@ -216,7 +217,7 @@ public class Quaternion {
     }
 
     public static Quaternion F(Quaternion U, double t, CalculationUtils C) {
-        Quaternion res = new Quaternion(0, 0, 0, 0, 0, 0, 0);
+//        Quaternion res = new Quaternion(0, 0, 0, 0, 0, 0, 0);
 //        U = Quaternion.normalize(U);
         double mu = 398600.4415E9;
         double x = C.x;
@@ -224,128 +225,43 @@ public class Quaternion {
         double z = C.z;
         double R = Math.sqrt(x * x + y * y + z * z);
 
-//        res.i = (-1. / 2) * (U.j * U.wx + U.k * U.wy + U.l * U.wz);
-//        res.j = (1. / 2) * (U.i * U.wx + U.l * U.wy - U.k * U.wz);
-//        res.k = (-1. / 2) * (U.l * U.wx - U.i * U.wy - U.j * U.wz);
-//        res.l = (1. / 2) * (U.k * U.wx - U.j * U.wy + U.i * U.wz);
-        res.i = (1. / 2) * (-U.j * U.wx - U.k * U.wy - U.l * U.wz);
-        res.j = (1. / 2) * (U.i * U.wx - U.l * U.wy + U.k * U.wz);
-        res.k = (1. / 2) * (U.l * U.wx + U.i * U.wy - U.j * U.wz);
-        res.l = (1. / 2) * (-U.k * U.wx + U.j * U.wy + U.i * U.wz);
+//        Quaternion res = Quaternion.quatMultQuat(new Quaternion(0, U.wx, U.wy, U.wz), U);
+        Quaternion res = Quaternion.quatMultQuat(new Quaternion(U.i, U.j, U.k, U.l), new Quaternion(0, U.wx, U.wy, U.wz));
+        res.i = (1. / 2.) * res.i;
+        res.j = (1. / 2.) * res.j;
+        res.k = (1. / 2.) * res.k;
+        res.l = (1. / 2.) * res.l;
         res.wx = (1. / ix) * (iy - iz) * U.wy * U.wz;
         res.wy = (1. / iy) * (iz - ix) * U.wx * U.wz;
         res.wz = (1. / iz) * (ix - iy) * U.wx * U.wy;
 
         // Гравитационный момент
-        double o = 0.0;
-        double e = 1.0;
-        double ex = x / R;
-        double ey = y / R;
-        double ez = z / R;
-        double l = -3 * mu / Math.pow(R, 3);
+        double koeff = 3 * mu / Math.pow(R, 3);
+        // Er
+        List<Double> er = new ArrayList<>(Arrays.asList(-x / R, -y / R, -z / R));
+        er = VectorsAlgebra.normalize(er);
 
-        List<Double> er = new ArrayList<>();
-        Collections.addAll(er, ex, ey, ez);
-
-        ArrayList J = new ArrayList<>();
-        ArrayList E = new ArrayList<>();
-        ArrayList<Double> line1 = new ArrayList<>();
-        ArrayList<Double> line2 = new ArrayList<>();
-        ArrayList<Double> line3 = new ArrayList<>();
-        Collections.addAll(line1, ix, 0., 0.);
-        Collections.addAll(line2, 0., iy, 0.);
-        Collections.addAll(line3, 0., 0., iz);
-        Collections.addAll(J, line1, line2, line3);
-        ArrayList<Double> line4 = new ArrayList<>();
-        ArrayList<Double> line5 = new ArrayList<>();
-        ArrayList<Double> line6 = new ArrayList<>();
-        Collections.addAll(line4, er.get(0));
-        Collections.addAll(line5, er.get(1));
-        Collections.addAll(line6, er.get(2));
-        Collections.addAll(E, line4, line5, line6);
-        ArrayList er2 = new ArrayList();
-        Collections.addAll(er2, er.get(0) * ix, er.get(1) * iy, er.get(2) * iz);
-        List<Double> result = VectorsAlgebra.multV(er, er2);
-        System.out.println("NEW");
-//        System.out.println(E);
-//        System.out.println(Matrix.matrixMult(J, E));
-        System.out.println(l * result.get(0) / ix);
-        System.out.println(l * result.get(1) / iy);
-        System.out.println(l * result.get(2) / iz);
-
-        res.wx += l * result.get(0) / ix;
-        res.wy += l * result.get(1) / iy;
-        res.wz += l * result.get(2) / iz;
-
-//        System.out.println("er");
-//        System.out.println(er);
+        // L*Er*~L
         Quaternion erq = new Quaternion(0, er);
-        Quaternion u = new Quaternion(U.i, U.j, U.k, U.l);
-//        System.out.println("u");
-//        System.out.println(u);
-//        u = Quaternion.normalize(u);
-        Quaternion erf = Quaternion.quatMultQuat(Quaternion.quatMultQuat(u, erq), Quaternion.conjugate(u));
-//        System.out.println(erf);
+        Quaternion L = new Quaternion(U.i, U.j, U.k, U.l);
+        L = Quaternion.conjugate(L);
+
+        Quaternion erf = Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, erq), Quaternion.conjugate(L));
+
         er.clear();
         Collections.addAll(er, erf.j, erf.k, erf.l);
-//        System.out.println(er);
         er = VectorsAlgebra.normalize(er);
-//        System.out.println(er);
 
+        // J*Er
+        List<Double> Jer = new ArrayList<>(Arrays.asList(er.get(0) * ix, er.get(1) * iy, er.get(2) * iz));
 
-        double eri = er.get(0);
-        double erj = er.get(1);
-        double erk = er.get(2);
+        // Er x J*Er
+        List<Double> quaziM = VectorsAlgebra.multV(er, Jer);
+        List<Double> M = VectorsAlgebra.constMult(koeff, quaziM);
 
-//        System.out.println("OLD");
-//        System.out.println(l * (-iy * erj * erk + iz * erj * erk) * (1. / ix));
-//        System.out.println(l * (ix * eri * erk - iz * eri * erk) * (1. / iy));
-//        System.out.println(l * (-ix * eri * erj + iy * eri * erj) * (1. / iz));
-
-
-//        res.wx += l * (-iy * erj * erk + iz * erj * erk) * (1. / ix);
-//        res.wy += l * (ix * eri * erk - iz * eri * erk) * (1. / iy);
-//        res.wz += l * (-ix * eri * erj + iy * eri * erj) * (1. / iz);
-
-
-//        ArrayList<Double> i = new ArrayList<>();
-//        ArrayList<Double> j = new ArrayList<>();
-//        ArrayList<Double> k = new ArrayList<>();
-//        List<Double> er = new ArrayList<>();
-//        Collections.addAll(i, e, o, o);
-//        Collections.addAll(j, o, e, o);
-//        Collections.addAll(k, o, o, e);
-//        Collections.addAll(er, ex, ey, ez);
-//        Quaternion erq = new Quaternion(0, er);
-//        Quaternion u = new Quaternion(U.i, U.j, U.k, U.l);
-//        u = Quaternion.normalize(u);
-//        Quaternion erf = Quaternion.quatMultQuat(Quaternion.quatMultQuat(u, erq), Quaternion.conjugate(u));
-//        er.clear();
-//        Collections.addAll(er, erf.j, erf.k, erf.l);
-//        er = VectorsAlgebra.normalize(er);
-////        System.out.println("er");
-////        System.out.println(er);
-//        double l = -3 * mu / Math.pow(R, 3);
-//        List<Double> addent1 = VectorsAlgebra.constMult(ix * VectorsAlgebra.multS(er, i), i);
-//        List<Double> addent2 = VectorsAlgebra.constMult(-iy * VectorsAlgebra.multS(er, j), j);
-//        List<Double> addent3 = VectorsAlgebra.constMult(-iz * VectorsAlgebra.multS(er, k), k);
-//        List<Double> sum = VectorsAlgebra.difference(VectorsAlgebra.difference(addent1, addent2), addent3);
-////        System.out.println('!');
-////        System.out.println(sum);
-////        System.out.println(er);
-////        System.out.println(VectorsAlgebra.multV(er, sum));
-//        List<Double> M = VectorsAlgebra.constMult(l / 10, VectorsAlgebra.multV(er, sum));
-////        System.out.println("M");
-////        System.out.println(M);
-////        System.out.println(M);
-//        double mx = M.get(0);
-//        double my = M.get(1);
-//        double mz = M.get(2);
-//        System.out.println(M + "   " + t);
-
-//        res.wx += (1. / ix) * mx;
-//        res.wy += (1. / iy) * my;
-//        res.wz += (1. / iz) * mz;
+        res.wx += (1. / ix) * M.get(0);
+        res.wy += (1. / iy) * M.get(1);
+        res.wz += (1. / iz) * M.get(2);
 
         return res;
     }
@@ -417,5 +333,143 @@ public class Quaternion {
     @Override
     public String toString() {
         return "[" + this.i + ", " + this.j + ", " + this.k + ", " + this.l + "]";
+    }
+
+    public static Quaternion fromRotationMatrix(List<List<Double>> rm) {
+
+        double qw;
+        double qx;
+        double qy;
+        double qz;
+
+        double m00 = rm.get(0).get(0);
+        double m01 = rm.get(0).get(1);
+        double m02 = rm.get(0).get(2);
+        double m10 = rm.get(1).get(0);
+        double m11 = rm.get(1).get(1);
+        double m12 = rm.get(1).get(2);
+        double m20 = rm.get(2).get(0);
+        double m21 = rm.get(2).get(1);
+        double m22 = rm.get(2).get(2);
+
+        double tr = m00 + m11 + m22;
+
+        if (tr > 0) {
+            double S = Math.sqrt(tr + 1.0) * 2; // S=4*qw
+            qw = 0.25 * S;
+            qx = (m21 - m12) / S;
+            qy = (m02 - m20) / S;
+            qz = (m10 - m01) / S;
+        } else if ((m00 > m11) & (m00 > m22)) {
+            double S = Math.sqrt(1.0 + m00 - m11 - m22) * 2; // S=4*qx
+            qw = (m21 - m12) / S;
+            qx = 0.25 * S;
+            qy = (m01 + m10) / S;
+            qz = (m02 + m20) / S;
+        } else if (m11 > m22) {
+            double S = Math.sqrt(1.0 + m11 - m00 - m22) * 2; // S=4*qy
+            qw = (m02 - m20) / S;
+            qx = (m01 + m10) / S;
+            qy = 0.25 * S;
+            qz = (m12 + m21) / S;
+        } else {
+            double S = Math.sqrt(1.0 + m22 - m00 - m11) * 2; // S=4*qz
+            qw = (m10 - m01) / S;
+            qx = (m02 + m20) / S;
+            qy = (m12 + m21) / S;
+            qz = 0.25 * S;
+        }
+
+        return new Quaternion(qw, qx, qy, qz);
+    }
+
+    public static Quaternion fromRotationMatrix(double m00, double m01, double m02, double m10, double m11,
+                                                double m12, double m20, double m21, double m22) {
+
+        double qw;
+        double qx;
+        double qy;
+        double qz;
+
+        double tr = m00 + m11 + m22;
+
+        if (tr > 0) {
+            double S = Math.sqrt(tr + 1.0) * 2; // S=4*qw
+            qw = 0.25 * S;
+            qx = (m21 - m12) / S;
+            qy = (m02 - m20) / S;
+            qz = (m10 - m01) / S;
+        } else if ((m00 > m11) & (m00 > m22)) {
+            double S = Math.sqrt(1.0 + m00 - m11 - m22) * 2; // S=4*qx
+            qw = (m21 - m12) / S;
+            qx = 0.25 * S;
+            qy = (m01 + m10) / S;
+            qz = (m02 + m20) / S;
+        } else if (m11 > m22) {
+            double S = Math.sqrt(1.0 + m11 - m00 - m22) * 2; // S=4*qy
+            qw = (m02 - m20) / S;
+            qx = (m01 + m10) / S;
+            qy = 0.25 * S;
+            qz = (m12 + m21) / S;
+        } else {
+            double S = Math.sqrt(1.0 + m22 - m00 - m11) * 2; // S=4*qz
+            qw = (m10 - m01) / S;
+            qx = (m02 + m20) / S;
+            qy = (m12 + m21) / S;
+            qz = 0.25 * S;
+        }
+
+        return new Quaternion(qw, qx, qy, qz);
+    }
+
+    public static Quaternion rm2quaternion(double m00, double m01, double m02, double m10, double m11,
+                                           double m12, double m20, double m21, double m22) {
+        Quaternion quaternion = new Quaternion(0, 0, 0, 0);
+        double tr = m00 + m11 + m22;
+
+        if (tr > 0) {
+            double sqtrp1 = Math.sqrt(tr + 1.0);
+            quaternion.i = 0.5 * sqtrp1;
+            quaternion.j = (m12 - m21) / (2.0 * sqtrp1);
+            quaternion.k = (m20 - m02) / (2.0 * sqtrp1);
+            quaternion.l = (m01 - m10) / (2.0 * sqtrp1);
+            return quaternion;
+        }
+        if ((m11 > m00) && (m11 > m22)) {
+            double sqdip1 = Math.sqrt(m11 - m00 - m22 + 1.0);
+            quaternion.k = 0.5 * sqdip1;
+
+            if (sqdip1 != 0) {
+                sqdip1 = 0.5 / sqdip1;
+            }
+
+            quaternion.i = (m20 - m02) * sqdip1;
+            quaternion.j = (m01 + m10) * sqdip1;
+            quaternion.l = (m12 + m21) * sqdip1;
+        } else if (m22 > m00) {
+            double sqdip1 = Math.sqrt(m22 - m00 - m11 + 1.0);
+            quaternion.k = 0.5 * sqdip1;
+
+            if (sqdip1 != 0) {
+                sqdip1 = 0.5 / sqdip1;
+            }
+
+
+            quaternion.i = (m01 - m10) * sqdip1;
+            quaternion.j = (m20 + m02) * sqdip1;
+            quaternion.k = (m12 + m21) * sqdip1;
+        } else {
+            double sqdip1 = Math.sqrt(m00 - m11 - m22 + 1.0);
+            quaternion.j = 0.5 * sqdip1;
+
+            if (sqdip1 != 0) {
+                sqdip1 = 0.5 / sqdip1;
+            }
+
+            quaternion.i = (m12 - m21) * sqdip1;
+            quaternion.k = (m01 + m10) * sqdip1;
+            quaternion.k = (m20 + m02) * sqdip1;
+        }
+        return quaternion;
     }
 }
