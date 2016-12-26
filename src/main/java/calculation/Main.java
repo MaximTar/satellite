@@ -3,11 +3,12 @@ package calculation;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
-import utils.*;
 
 import java.util.*;
 
@@ -15,8 +16,8 @@ import java.util.*;
 public class Main extends Application {
 
     Stage mainWindow, convertWindow;
-    Scene startScene, startCoordinateScene, startKeplerScene;
-    Button startCoordinateButton, startKeplerButton;
+    Scene startScene, startCoordinateOneScene, startCoordinateTwoScene, startKeplerScene;
+    Button startCoordinateButtonOneBody, startKeplerButton, startCoordinateButtonTwoBody;
 
     @Override
     public void start(Stage stage) {
@@ -30,19 +31,36 @@ public class Main extends Application {
         gridStart.setVgap(15);
         gridStart.setHgap(8);
 
-        startCoordinateButton = new Button("Coordinate View");
-        GridPane.setConstraints(startCoordinateButton, 4, 1);
-        GridPane.setHalignment(startCoordinateButton, HPos.CENTER);
+        startCoordinateButtonOneBody = new Button("One Body Coordinate View");
+        GridPane.setConstraints(startCoordinateButtonOneBody, 4, 1);
+        GridPane.setHalignment(startCoordinateButtonOneBody, HPos.CENTER);
 
-        CoordinatePane gridCoordinate = new CoordinatePane(mainWindow);
-        startCoordinateButton.setOnAction(event -> {
-            startCoordinateScene = new Scene(gridCoordinate, 780, 490);
-            mainWindow.setScene(startCoordinateScene);
+        CoordinatePaneOneBody gridCoordinateOne = new CoordinatePaneOneBody(mainWindow);
+        startCoordinateButtonOneBody.setOnAction(event -> {
+            startCoordinateOneScene = new Scene(gridCoordinateOne, 780, 490);
+            mainWindow.setScene(startCoordinateOneScene);
+            Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+            mainWindow.setX((primScreenBounds.getWidth() - mainWindow.getWidth()) / 2);
+            mainWindow.setY((primScreenBounds.getHeight() - mainWindow.getHeight()) / 2);
+            mainWindow.show();
+        });
+
+        startCoordinateButtonTwoBody = new Button("Two Bodies Coordinate View");
+        GridPane.setConstraints(startCoordinateButtonTwoBody, 4, 2);
+        GridPane.setHalignment(startCoordinateButtonTwoBody, HPos.CENTER);
+
+        CoordinatePaneTwoBody gridCoordinateTwo = new CoordinatePaneTwoBody(mainWindow);
+        startCoordinateButtonTwoBody.setOnAction(event -> {
+            startCoordinateTwoScene = new Scene(gridCoordinateTwo, 1145, 445);
+            mainWindow.setScene(startCoordinateTwoScene);
+            Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+            mainWindow.setX((primScreenBounds.getWidth() - mainWindow.getWidth()) / 2);
+            mainWindow.setY((primScreenBounds.getHeight() - mainWindow.getHeight()) / 2);
             mainWindow.show();
         });
 
         startKeplerButton = new Button("Kepler View");
-        GridPane.setConstraints(startKeplerButton, 4, 2);
+        GridPane.setConstraints(startKeplerButton, 4, 3);
         GridPane.setHalignment(startKeplerButton, HPos.CENTER);
 
         KeplerPane gridKepler = new KeplerPane(mainWindow);
@@ -52,9 +70,9 @@ public class Main extends Application {
             mainWindow.show();
         });
 
-        gridStart.getChildren().addAll(startCoordinateButton, startKeplerButton);
+        gridStart.getChildren().addAll(startCoordinateButtonOneBody, startCoordinateButtonTwoBody, startKeplerButton);
 
-        startScene = new Scene(gridStart, 200, 130);
+        startScene = new Scene(gridStart, 250, 170);
         mainWindow.setResizable(false);
         mainWindow.setScene(startScene);
         mainWindow.show();
@@ -103,8 +121,10 @@ public class Main extends Application {
 //        System.out.println(Quaternion.quatMultQuat(q1, q2));
 //        System.out.println(Quaternion.quatMultQuat(q2, q1));
 
-//        System.out.println(Math.sqrt(398600.4415E9/Math.pow(6700000, 3)));
-//        System.out.println(7713./6700000);
+        System.out.println(Math.sqrt(398600.4415E9/Math.pow(6700000, 1)));
+        System.out.println(7713.144832618873/6700000);
+        System.out.println(Math.sqrt(398600.4415E9/Math.pow(6700500, 1)));
+        System.out.println(7712.857044814634/6700500);
 //        System.out.println(Math.sin(Math.toRadians(15)));
 //        System.out.println(Math.cos(Math.toRadians(15)));
 //        System.out.println(Math.sin(Math.toRadians(5)) * Math.sin(Math.toRadians(5)) + Math.cos(Math.toRadians(5)) * Math.cos(Math.toRadians(5)));

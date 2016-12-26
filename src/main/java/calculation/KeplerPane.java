@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import utils.CalculationUtils;
 import utils.NumberUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class KeplerPane extends GridPane {
@@ -72,7 +71,7 @@ public class KeplerPane extends GridPane {
                         NumberUtils.parseTextAsDouble(iInput), NumberUtils.parseTextAsDouble(wInput),
                         NumberUtils.parseTextAsDouble(pInput), NumberUtils.parseTextAsDouble(eInput),
                         NumberUtils.parseTextAsDouble(tauInput));
-                List<List<Double>> result = CalculationUtils.calculate(
+                List<List<Double>> result = CalculationUtils.calculateOneBody(
                         NumberUtils.parseTextAsDouble(Kt0Input), NumberUtils.parseTextAsDouble(KdtInput),
                         NumberUtils.parseTextAsDouble(KtMaxInput), subresult.get(0), subresult.get(1),
                         subresult.get(2), subresult.get(3), subresult.get(4), subresult.get(5),
@@ -111,7 +110,7 @@ public class KeplerPane extends GridPane {
                     NumberUtils.parseTextAsDouble(iInput), NumberUtils.parseTextAsDouble(wInput),
                     NumberUtils.parseTextAsDouble(pInput), NumberUtils.parseTextAsDouble(eInput),
                     NumberUtils.parseTextAsDouble(tauInput));
-            CoordinatePane gridCoordinate = new CoordinatePane(mainWindow);
+            CoordinatePaneOneBody gridCoordinate = new CoordinatePaneOneBody(mainWindow);
             gridCoordinate.getX0Input().setText(String.valueOf(result.get(0)));
             gridCoordinate.getY0Input().setText(String.valueOf(result.get(1)));
             gridCoordinate.getZ0Input().setText(String.valueOf(result.get(2)));

@@ -11,18 +11,14 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import utils.*;
-
-import java.io.*;
-
 import java.time.LocalDate;
 import java.util.*;
 
-public class CoordinatePane extends GridPane {
+public class CoordinatePaneOneBody extends GridPane {
 
     private Scene resultScene;
     Group root = new Group();
@@ -68,7 +64,7 @@ public class CoordinatePane extends GridPane {
     CheckBox checkBoxSunPres = new CheckBox();
     CheckBox checkBoxDrag = new CheckBox();
 
-    public CoordinatePane(Stage mainWindow) {
+    public CoordinatePaneOneBody(Stage mainWindow) {
         setPadding(new Insets(15, 15, 15, 15));
         setVgap(15);
         setHgap(8);
@@ -239,7 +235,7 @@ public class CoordinatePane extends GridPane {
                 XYChart.Series series = new XYChart.Series();
 //                XYChart.Series series2 = new XYChart.Series();
 //                XYChart.Series series3 = new XYChart.Series();
-                List<List<Double>> result = CalculationUtils.calculate(
+                List<List<Double>> result = CalculationUtils.calculateOneBody(
                         NumberUtils.parseTextAsDouble(t0Input),
                         NumberUtils.parseTextAsDouble(dtInput), NumberUtils.parseTextAsDouble(tMaxInput),
                         NumberUtils.parseTextAsDouble(x0Input), NumberUtils.parseTextAsDouble(y0Input),
@@ -449,12 +445,12 @@ public class CoordinatePane extends GridPane {
 
         });
 
-        HBox hBoxFirstBody1 = new HBox(20);
+        HBox hBoxFirstBody1 = new HBox(5);
 //        TextFieldTableCell J = new TextFieldTableCell(); // Try to fill like matrix
 //        hBoxFirstBody.getChildren().addAll(J);
         Label jxxLabel = new Label("Jxx:");
-        Label jyyLabel = new Label("Jyy:");
-        Label jzzLabel = new Label("Jzz:");
+        Label jyyLabel = new Label("   Jyy:");
+        Label jzzLabel = new Label("   Jzz:");
         JxxInput.setMaxWidth(100);
         JyyInput.setMaxWidth(100);
         JzzInput.setMaxWidth(100);
@@ -463,20 +459,20 @@ public class CoordinatePane extends GridPane {
         addRow(9, hBoxFirstBody1);
         hBoxFirstBody1.setAlignment(Pos.CENTER);
 
-        HBox hBoxFirstBody2 = new HBox(10);
+        HBox hBoxFirstBody2 = new HBox(5);
         Label qwLabel = new Label("qw:");
-        Label qxLabel = new Label("qx:");
-        Label qyLabel = new Label("qy:");
-        Label qzLabel = new Label("qz:");
+        Label qxLabel = new Label("   qx:");
+        Label qyLabel = new Label("   qy:");
+        Label qzLabel = new Label("   qz:");
         hBoxFirstBody2.getChildren().addAll(qwLabel, qwInput, qxLabel, qxInput, qyLabel, qyInput, qzLabel, qzInput);
         setColumnSpan(hBoxFirstBody2, 6);
         addRow(10, hBoxFirstBody2);
         hBoxFirstBody2.setAlignment(Pos.CENTER);
 
-        HBox hBoxFirstBody3 = new HBox(10);
+        HBox hBoxFirstBody3 = new HBox(5);
         Label wxLabel = new Label("wx:");
-        Label wyLabel = new Label("wy:");
-        Label wzLabel = new Label("wz:");
+        Label wyLabel = new Label("   wy:");
+        Label wzLabel = new Label("   wz:");
         hBoxFirstBody3.getChildren().addAll(wxLabel, wxInput, wyLabel, wyInput, wzLabel, wzInput);
         setColumnSpan(hBoxFirstBody3, 6);
         addRow(11, hBoxFirstBody3);
@@ -497,7 +493,7 @@ public class CoordinatePane extends GridPane {
         Label checkboxLabelDrag = new Label("   Atmospheric Drag:");
         checkboxLabelDrag.setLabelFor(checkBoxDrag);
         checkboxLabelDrag.setOnMouseClicked(e -> checkBoxDrag.setSelected(!checkBoxDrag.isSelected()));
-        HBox hBoxDisturbances = new HBox(10);
+        HBox hBoxDisturbances = new HBox(5);
         hBoxDisturbances.getChildren().addAll(checkboxLabelGeoPot, checkBoxGeoPot,
                 checkboxLabelSunGravity, checkBoxSunGravity, checkboxLabelMoonGravity, checkBoxMoonGravity,
                 checkboxLabelSunPres, checkBoxSunPres, checkboxLabelDrag, checkBoxDrag);

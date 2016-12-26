@@ -1,66 +1,29 @@
 package animation;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import utils.Form;
-import utils.Material;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Double.*;
 
 public class Main extends Application {
 
     private static final String titleTxt = "Animation";
-    final Group root = new Group();
-    final Group axisGroup = new Group();
-    final Form world = new Form();
-    final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final Form cameraForm = new Form();
-    final Form cameraForm2 = new Form();
-    final Form cameraForm3 = new Form();
-    final double cameraDistance = 200000;
-    final Form spaceGroup = new Form();
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
-    private Integer j = 0;
     Stage primaryStage;
-    List<String> list;
-    List<Double> x = new ArrayList<>();
-    List<Double> y = new ArrayList<>();
-    List<Double> z = new ArrayList<>();
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -79,11 +42,17 @@ public class Main extends Application {
         labelHb.getChildren().add(label);
 
         // Buttons
-        Button btn1 = new Button("Choose a file...");
-        btn1.setOnAction(new SingleFcButtonListener());
-        HBox buttonHb1 = new HBox(10);
-        buttonHb1.setAlignment(Pos.CENTER);
-        buttonHb1.getChildren().addAll(btn1);
+        Button btnOneBodyOrbit = new Button("One Body Orbit Animation");
+        btnOneBodyOrbit.setOnAction(new ButtonOneBodyOrbitListener());
+        Button btnTwoBodiesOrbit = new Button("Two Bodies Orbit Animation");
+        btnTwoBodiesOrbit.setOnAction(new ButtonTwoBodiesOrbitListener());
+        Button btnOneBodyRotation = new Button("One Body Rotation Animation");
+        btnOneBodyRotation.setOnAction(new ButtonOneBodyRotationListener());
+        Button btnTwoBodiesRotation = new Button("Two Bodies Rotation Animation");
+        btnTwoBodiesRotation.setOnAction(new ButtonTwoBodiesRotationListener());
+        VBox buttonVb = new VBox(10);
+        buttonVb.setAlignment(Pos.CENTER);
+        buttonVb.getChildren().addAll(btnOneBodyOrbit, btnTwoBodiesOrbit, btnOneBodyRotation, btnTwoBodiesRotation);
 
         // Status message text
         Text actionStatus = new Text();
@@ -93,23 +62,43 @@ public class Main extends Application {
         // Vbox
         VBox vbox = new VBox(30);
         vbox.setPadding(new Insets(25, 25, 25, 25));
-        vbox.getChildren().addAll(labelHb, buttonHb1, actionStatus);
+        vbox.getChildren().addAll(labelHb, buttonVb, actionStatus);
 
         // Scene
-        Scene scene = new Scene(vbox, 300, 180); // w x h
+        Scene scene = new Scene(vbox, 300, 280); // w x h
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private class SingleFcButtonListener implements EventHandler<ActionEvent> {
-
+    private class ButtonOneBodyOrbitListener implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent e) {
-            showSingleFileChooser();
+            oneBodyOrbitFileChooser();
         }
     }
 
-    private void showSingleFileChooser() {
+    private class ButtonTwoBodiesOrbitListener implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent e) {
+            twoBodiesOrbitFileChooser();
+        }
+    }
+
+    private class ButtonOneBodyRotationListener implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent e) {
+            oneBodyRotationFileChooser();
+        }
+    }
+
+    private class ButtonTwoBodiesRotationListener implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent e) {
+            twoBodiesRotationFileChooser();
+        }
+    }
+
+    private void oneBodyOrbitFileChooser() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -117,223 +106,43 @@ public class Main extends Application {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
         if (selectedFile != null) {
-            startAnimation(primaryStage, Paths.get(selectedFile.getPath()));
+            OneBodyOrbitAnimation.startAnimation(primaryStage, Paths.get(selectedFile.getPath()));
         }
     }
 
-    private void buildScene() {
-        root.getChildren().add(world);
-    }
+    private void twoBodiesOrbitFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        fileChooser.setTitle("Select text file");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
-    private void buildCamera() {
-        root.getChildren().add(cameraForm);
-        cameraForm.getChildren().add(cameraForm2);
-        cameraForm2.getChildren().add(cameraForm3);
-        cameraForm3.getChildren().add(camera);
-        cameraForm3.setRotateZ(180.0);
-
-        camera.setNearClip(1);
-        camera.setFarClip(1E8);
-        camera.setTranslateZ(-cameraDistance);
-        cameraForm.ry.setAngle(320.0);
-        cameraForm.rx.setAngle(40);
-    }
-
-    private void buildAxes() {
-        Material redMaterial = new Material(Color.RED);
-        Material greenMaterial = new Material(Color.GREEN);
-        Material blueMaterial = new Material(Color.BLUE);
-
-        final Box xAxis = new Box(37240.0, 100, 100);
-        final Box yAxis = new Box(100, 37240.0, 100);
-        final Box zAxis = new Box(100, 100, 37240.0);
-
-        final Box xLabel1 = new Box(1000, 100, 100);
-        xLabel1.setTranslateX(19500);
-        xLabel1.setRotate(45);
-        final Box xLabel2 = new Box(1000, 100, 100);
-        xLabel2.setTranslateX(19500);
-        xLabel2.setRotate(-45);
-
-        final Box yLabel1 = new Box(1200, 100, 100);
-        yLabel1.setTranslateY(19400);
-        yLabel1.setTranslateX(-80);
-        yLabel1.setRotate(-55);
-        final Box yLabel2 = new Box(600, 100, 100);
-        yLabel2.setTranslateY(19600);
-        yLabel2.setTranslateX(80);
-        yLabel2.setRotate(55);
-
-        final Box zLabel1 = new Box(900, 100, 100);
-        zLabel1.setTranslateZ(19500);
-        final Box zLabel2 = new Box(900, 100, 100);
-        zLabel2.setTranslateZ(19500);
-        zLabel2.setTranslateY(800);
-        final Box zLabel3 = new Box(1100, 100, 100);
-        zLabel3.setTranslateZ(19500);
-        zLabel3.setTranslateY(400);
-        zLabel3.setRotate(-45);
-
-
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
-        zAxis.setMaterial(blueMaterial);
-
-        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis, xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
-        world.getChildren().add(axisGroup);
-    }
-
-    private void buildSpace(Path path) {
-
-        Material greenMaterial = new Material(Color.GREEN);
-        Material whiteMaterial = new Material(Color.WHITE);
-        Material greyMaterial = new Material(Color.GREY);
-
-        Form spaceForm = new Form();
-        Form earthForm = new Form();
-
-        Sphere earthSphere = new Sphere(6370.0);
-        earthSphere.setMaterial(greenMaterial);
-
-        Sphere satelliteSphere = new Sphere(500.0);
-        satelliteSphere.setMaterial(whiteMaterial);
-
-        spaceForm.getChildren().add(earthForm);
-        earthForm.getChildren().add(earthSphere);
-        spaceGroup.getChildren().add(spaceForm);
-
-        final StackPane stack = new StackPane();
-        stack.getChildren().addAll(satelliteSphere);
-        spaceGroup.getChildren().add(stack);
-
-        world.getChildren().addAll(spaceGroup);
-
-        try {
-            list = Files.readAllLines(path);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (selectedFile != null) {
+            TwoBodiesOrbitAnimation.startAnimation(primaryStage, Paths.get(selectedFile.getPath()));
         }
-        for (int j = 0; j < list.size() - 2; j++) {
-            String[] partsOrigin = list.get(j).split("\\t\\t\\t");
-            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0]) / 1000, Double.parseDouble(partsOrigin[1]) / 1000,
-                    Double.parseDouble(partsOrigin[2]) / 1000);
-            j++;
-            String[] partsTarget = list.get(j).split("\\t\\t\\t");
-            Point3D target = new Point3D(Double.parseDouble(partsTarget[0]) / 1000, Double.parseDouble(partsTarget[1]) / 1000,
-                    Double.parseDouble(partsTarget[2]) / 1000);
-            Cylinder line = createConnection(origin, target);
-            line.setMaterial(greyMaterial);
-            world.getChildren().add(line);
-        }
-
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-
-
-        //Path path = Paths.get("C:", "Users", "Labcomp-1", "IdeaProjects", "hello", "hello", "04-02-2016 04-26.txt");
-        try {
-            list = Files.readAllLines(path);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        for (int j = 0; j < list.size() - 1; j++) {
-            String[] parts = list.get(j).split("\\t\\t\\t");
-            x.add(j, parseDouble(parts[0]));
-            y.add(j, parseDouble(parts[1]));
-            z.add(j, parseDouble(parts[2]));
-        }
-
-        Duration duration = Duration.millis(10);
-        EventHandler onFinished = t -> {
-//                i = 0;
-            stack.setTranslateX(x.get(j) / 1000);
-            stack.setTranslateY(y.get(j) / 1000);
-            stack.setTranslateZ(z.get(j) / 1000);
-            j++;
-            if (j == x.size()) {
-                j = 0;
-            }
-        };
-        KeyFrame keyFrame = new KeyFrame(duration, onFinished);
-        timeline.getKeyFrames().add(keyFrame);
-        timeline.play();
     }
 
-    private void handleMouse(Scene scene) {
-        scene.setOnMousePressed(me -> {
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseOldX = me.getSceneX();
-            mouseOldY = me.getSceneY();
-        });
-        scene.setOnMouseDragged(me -> {
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = me.getSceneX();
-            mousePosY = me.getSceneY();
-            mouseDeltaX = (mousePosX - mouseOldX);
-            mouseDeltaY = (mousePosY - mouseOldY);
+    private void oneBodyRotationFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        fileChooser.setTitle("Select text file");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
-            double modifier = 1.0;
-            double modifierFactor = 0.1;
-
-            if (me.isControlDown()) {
-                modifier = 0.1;
-            }
-            if (me.isShiftDown()) {
-                modifier = 500.0;
-            }
-            if (me.isPrimaryButtonDown()) {
-                double mod = modifierFactor * modifier * 2.0;
-                cameraForm.ry.setAngle(cameraForm.ry.getAngle() - mouseDeltaX * mod);  // +
-                cameraForm.rx.setAngle(cameraForm.rx.getAngle() + mouseDeltaY * mod);  // -
-            } else if (me.isSecondaryButtonDown()) {
-                double z1 = camera.getTranslateZ();
-                double newZ = z1 + mouseDeltaX * modifierFactor * modifier;
-                camera.setTranslateZ(newZ);
-            } else if (me.isMiddleButtonDown()) {
-                double mod = modifierFactor * modifier * 3.0;
-                cameraForm2.t.setX(cameraForm2.t.getX() + mouseDeltaX * mod);  // -
-                cameraForm2.t.setY(cameraForm2.t.getY() + mouseDeltaY * mod);  // -
-            }
-        });
+        if (selectedFile != null) {
+            OneBodyRotationAnimation.startAnimation(primaryStage, Paths.get(selectedFile.getPath()));
+        }
     }
 
-    public void startAnimation(Stage primaryStage, Path path) {
-        buildScene();
-        buildCamera();
-        buildAxes();
-        buildSpace(path);
+    private void twoBodiesRotationFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        fileChooser.setTitle("Select text file");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
-        Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.web("#000028"));
-        handleMouse(scene);
-
-        primaryStage.setTitle("Animation");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        scene.setCamera(camera);
-
-    }
-
-    public Cylinder createConnection(Point3D origin, Point3D target) {
-        Point3D yAxis = new Point3D(0, 1, 0);
-        Point3D diff = target.subtract(origin);
-        double height = diff.magnitude() * 5;
-
-        Point3D mid = target.midpoint(origin);
-        Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(), mid.getZ());
-
-        Point3D axisOfRotation = diff.crossProduct(yAxis);
-        double angle = Math.acos(diff.normalize().dotProduct(yAxis));
-        Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
-
-        Cylinder line = new Cylinder(200, height);
-        line.setOpacity(0.7);
-
-        line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
-
-        return line;
+        if (selectedFile != null) {
+            TwoBodiesRotationAnimation.startAnimation(primaryStage, Paths.get(selectedFile.getPath()));
+        }
     }
 }

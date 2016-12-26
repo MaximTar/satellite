@@ -4,143 +4,66 @@ package animation;
  * Created by Maxim Tarasov on 12.10.2016.
  */
 
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Sphere;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.*;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static java.lang.Double.parseDouble;
 
-public class AniQuat extends Application {
+public class OneBodyRotationAnimation {
 
-    private static final String titleTxt = "Animation";
-    final Group root = new Group();
-    final Group axisGroup = new Group();
-    final StackPane axisLVLH = new StackPane();
-    final Form world = new Form();
-    final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final Form cameraForm = new Form();
-    final Form cameraForm2 = new Form();
-    final Form cameraForm3 = new Form();
-    final double cameraDistance = 2000;
-    final Form spaceGroup = new Form();
-    double mousePosX;
-    double mousePosY;
-    double mouseOldX;
-    double mouseOldY;
-    double mouseDeltaX;
-    double mouseDeltaY;
-    private Integer j = 0;
-    Stage primaryStage;
-    List<String> list;
-    List<Double> qi = new ArrayList<>();
-    List<Double> qj = new ArrayList<>();
-    List<Double> qk = new ArrayList<>();
-    List<Double> ql = new ArrayList<>();
-    List<Double> x = new ArrayList<>();
-    List<Double> y = new ArrayList<>();
-    List<Double> z = new ArrayList<>();
-    List<Double> vx = new ArrayList<>();
-    List<Double> vy = new ArrayList<>();
-    List<Double> vz = new ArrayList<>();
+    final static Group root = new Group();
+    final static Group axisGroup = new Group();
+    final static StackPane axisLVLH = new StackPane();
+    final static Form world = new Form();
+    final static PerspectiveCamera camera = new PerspectiveCamera(true);
+    final static Form cameraForm = new Form();
+    final static Form cameraForm2 = new Form();
+    final static Form cameraForm3 = new Form();
+    final static double cameraDistance = 2000;
+    final static Form spaceGroup = new Form();
+    static double mousePosX;
+    static double mousePosY;
+    static double mouseOldX;
+    static double mouseOldY;
+    static double mouseDeltaX;
+    static double mouseDeltaY;
+    private static Integer j = 0;
+    static List<String> list;
+    static List<Double> qi = new ArrayList<>();
+    static List<Double> qj = new ArrayList<>();
+    static List<Double> qk = new ArrayList<>();
+    static List<Double> ql = new ArrayList<>();
+    static List<Double> x = new ArrayList<>();
+    static List<Double> y = new ArrayList<>();
+    static List<Double> z = new ArrayList<>();
+    static List<Double> vx = new ArrayList<>();
+    static List<Double> vy = new ArrayList<>();
+    static List<Double> vz = new ArrayList<>();
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
 
-    @Override
-    public void start(Stage stage) {
 
-        primaryStage = stage;
-        primaryStage.setTitle(titleTxt);
-
-        // Window label
-        Label label = new Label("Choose file to animate");
-        HBox labelHb = new HBox();
-        labelHb.setAlignment(Pos.CENTER);
-        labelHb.getChildren().add(label);
-
-        // Buttons
-        Button btn1 = new Button("Choose a file...");
-        btn1.setOnAction(new SingleFcButtonListener());
-        HBox buttonHb1 = new HBox(10);
-        buttonHb1.setAlignment(Pos.CENTER);
-        buttonHb1.getChildren().addAll(btn1);
-
-        // Status message text
-        Text actionStatus = new Text();
-        actionStatus.setFont(Font.font("Calibri", FontWeight.NORMAL, 20));
-        actionStatus.setFill(Color.FIREBRICK);
-
-        // Vbox
-        VBox vbox = new VBox(30);
-        vbox.setPadding(new Insets(25, 25, 25, 25));
-        vbox.getChildren().addAll(labelHb, buttonHb1, actionStatus);
-
-        // Scene
-        Scene scene = new Scene(vbox, 300, 180); // w x h
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    private class SingleFcButtonListener implements EventHandler<ActionEvent> {
-
-        @Override
-        public void handle(ActionEvent e) {
-            showSingleFileChooser();
-        }
-    }
-
-    private void showSingleFileChooser() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        File selectedFile = fileChooser.showOpenDialog(null);
-        fileChooser.setTitle("Select text file");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-
-        if (selectedFile != null) {
-            startAnimation(primaryStage, Paths.get(selectedFile.getPath()));
-        }
-    }
-
-    private void buildScene() {
+    private static void buildScene() {
         root.getChildren().add(world);
     }
 
-    private void buildCamera() {
+    private static void buildCamera() {
         root.getChildren().add(cameraForm);
         cameraForm.getChildren().add(cameraForm2);
         cameraForm2.getChildren().add(cameraForm3);
@@ -154,7 +77,7 @@ public class AniQuat extends Application {
         cameraForm.rx.setAngle(40);
     }
 
-    private void buildAxes() {
+    private static void buildAxes() {
         Material redMaterial = new Material(Color.RED);
         Material greenMaterial = new Material(Color.GREEN);
         Material blueMaterial = new Material(Color.BLUE);
@@ -206,14 +129,14 @@ public class AniQuat extends Application {
         world.getChildren().add(axisGroup);
     }
 
-    private void buildSpace(Path path) {
+    private static void buildSpace(Path path) {
 
         Material whiteMaterial = new Material(Color.WHITE);
         Material greyMaterial = new Material(Color.GREY);
 
         Form spaceForm = new Form();
 
-        Cylinder cylinder = new Cylinder(5.0, 20.0);
+        Cylinder cylinder = new Cylinder(50.0, 200.0);
         cylinder.setMaterial(whiteMaterial);
 //        cylinder.setRotationAxis(Rotate.X_AXIS);
 //        cylinder.setRotate(90);
@@ -237,7 +160,6 @@ public class AniQuat extends Application {
         Material redMaterial = new Material(Color.RED);
         Material greenMaterial = new Material(Color.GREEN);
         Material blueMaterial = new Material(Color.BLUE);
-//        final StackPane axisLVLH = new StackPane();
         final Box LVLHX = new Box(360, 1, 1);
         final Box LVLHY = new Box(1, 360, 1);
         final Box LVLHZ = new Box(1, 1, 360);
@@ -251,33 +173,14 @@ public class AniQuat extends Application {
         axisLVLH.setTranslateX(-180);
         axisLVLH.setTranslateY(-180);
         spaceGroup.getChildren().add(axisLVLH);
-//        axisLVLH.setTranslateZ(-180);
 
         world.getChildren().addAll(spaceGroup);
-
-//        try {
-//            list = Files.readAllLines(path);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        for (int j = 0; j < list.size() - 2; j++) {
-//            String[] partsOrigin = list.get(j).split("\\t\\t\\t");
-//            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0]) / 1000, Double.parseDouble(partsOrigin[1]) / 1000,
-//                    Double.parseDouble(partsOrigin[2]) / 1000);
-//            j++;
-//            String[] partsTarget = list.get(j).split("\\t\\t\\t");
-//            Point3D target = new Point3D(Double.parseDouble(partsTarget[0]) / 1000, Double.parseDouble(partsTarget[1]) / 1000,
-//                    Double.parseDouble(partsTarget[2]) / 1000);
-//            Cylinder line = createConnection(origin, target);
-//            line.setMaterial(greyMaterial);
-//            world.getChildren().add(line);
-//        }
 
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        stack.setTranslateX(-5);
-        stack.setTranslateY(-10);
+        stack.setTranslateX(-50);
+        stack.setTranslateY(-100);
         // For pivotY
 //        stack.setTranslateY(-150);
 
@@ -313,9 +216,6 @@ public class AniQuat extends Application {
 
             Quaternion first = new Quaternion(qw, qx, qy, qz);
             first = Quaternion.normalize(first);
-//            first = Quaternion.conjugate(first);
-//            System.out.println("!!!");
-//            System.out.println(first);
             List rECI = new ArrayList<>();
             Collections.addAll(rECI, x.get(j), y.get(j), z.get(j));
             List vECI = new ArrayList<>();
@@ -328,18 +228,7 @@ public class AniQuat extends Application {
             Quaternion second = Quaternion.fromRotationMatrix(xNew.get(0), xNew.get(1), xNew.get(2), yNew.get(0),
                     yNew.get(1), yNew.get(2), zNew.get(0), zNew.get(1), zNew.get(2));
             second = Quaternion.conjugate(second);
-//            System.out.println(second);
             second = Quaternion.normalize(second);
-
-//            Quaternion fin = Quaternion.quatMultQuat(first, second);
-//            Quaternion fin = Quaternion.quatMultQuat(second, first);
-//            fin = Quaternion.normalize(fin);
-//            System.out.println(fin);
-
-//            qw = fin.i;
-//            qx = fin.j;
-//            qy = fin.k;
-//            qz = fin.l;
 
             double qwa = second.i;
             double qxa = second.j;
@@ -370,7 +259,7 @@ public class AniQuat extends Application {
         timeline.play();
     }
 
-    private void handleMouse(Scene scene) {
+    private static void handleMouse(Scene scene) {
         scene.setOnMousePressed(me -> {
             mousePosX = me.getSceneX();
             mousePosY = me.getSceneY();
@@ -410,7 +299,7 @@ public class AniQuat extends Application {
         });
     }
 
-    public void startAnimation(Stage primaryStage, Path path) {
+    public static void startAnimation(Stage primaryStage, Path path) {
         buildScene();
         buildCamera();
         buildAxes();
@@ -425,25 +314,5 @@ public class AniQuat extends Application {
         primaryStage.show();
         scene.setCamera(camera);
 
-    }
-
-    public Cylinder createConnection(Point3D origin, Point3D target) {
-        Point3D yAxis = new Point3D(0, 1, 0);
-        Point3D diff = target.subtract(origin);
-        double height = diff.magnitude() * 5;
-
-        Point3D mid = target.midpoint(origin);
-        Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(), mid.getZ());
-
-        Point3D axisOfRotation = diff.crossProduct(yAxis);
-        double angle = Math.acos(diff.normalize().dotProduct(yAxis));
-        Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
-
-        Cylinder line = new Cylinder(200, height);
-        line.setOpacity(0.7);
-
-        line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
-
-        return line;
     }
 }

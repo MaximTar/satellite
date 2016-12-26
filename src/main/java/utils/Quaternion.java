@@ -1,9 +1,6 @@
 package utils;
 
-import calculation.CoordinatePane;
-
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -13,11 +10,9 @@ public class Quaternion {
 
     public double i, j, k, l, wx, wy, wz, M;
     public static File fileName;
-    public static double ix = CalculationUtils.getJxx();
-    public static double iy = CalculationUtils.getJyy();
-    public static double iz = CalculationUtils.getJzz();
-
-//    public double qsfdsf = CoordinatePane
+    public static double ix = CalculationUtils.getJ1xx();
+    public static double iy = CalculationUtils.getJ1yy();
+    public static double iz = CalculationUtils.getJ1zz();
 
     public Quaternion(double i, double j, double k, double l) {
         this.i = i;
@@ -217,8 +212,6 @@ public class Quaternion {
     }
 
     public static Quaternion F(Quaternion U, double t, CalculationUtils C) {
-//        Quaternion res = new Quaternion(0, 0, 0, 0, 0, 0, 0);
-//        U = Quaternion.normalize(U);
         double mu = 398600.4415E9;
         double x = C.x;
         double y = C.y;
@@ -262,6 +255,30 @@ public class Quaternion {
         res.wx += (1. / ix) * M.get(0);
         res.wy += (1. / iy) * M.get(1);
         res.wz += (1. / iz) * M.get(2);
+
+        return res;
+    }
+
+    public static Quaternion F2(Quaternion U, double t, CalculationUtils C) {
+        Quaternion res = F(U, t, C);
+        List<Double> attachmentPoint = new ArrayList<>(Arrays.asList(10., 0., 0.));
+
+        if (CalculationUtils.tensionFFlag) {
+
+            // Перевод F(tension) ECI -> Body
+            List<Double> tensionFBody = new ArrayList<>();
+            Quaternion tensionFECI = new Quaternion(0, CalculationUtils.tensionF);
+            Quaternion L = new Quaternion(U.i, U.j, U.k, U.l);
+            L = Quaternion.conjugate(L);
+            Quaternion tensionFBodyQ = Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, tensionFECI), Quaternion.conjugate(L));
+//            tensionFBody.clear();
+            Collections.addAll(tensionFBody, tensionFBodyQ.j, tensionFBodyQ.k, tensionFBodyQ.l);
+
+            List<Double> tensionM = VectorsAlgebra.multV(attachmentPoint, tensionFBody);
+            res.wx += (1. / ix) * tensionM.get(0);
+            res.wy += (1. / ix) * tensionM.get(1);
+            res.wz += (1. / ix) * tensionM.get(2);
+        }
 
         return res;
     }
