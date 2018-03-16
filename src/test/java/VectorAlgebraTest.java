@@ -1,5 +1,3 @@
-package com.github.qcha.utils;
-
 import com.google.common.collect.Lists;
 import org.junit.Test;
 

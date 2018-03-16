@@ -1,5 +1,3 @@
-package com.github.qcha.utils;
-
 import org.apache.commons.lang3.math.*;
 import org.junit.Assert;
 import org.junit.Test;
