@@ -24,11 +24,11 @@ public class GeoPot {
         return c;
     }
 
-//    public static GeoPot sub(GeoPot a, GeoPot b) {
+//    public static GeoPot sub(GeoPot area, GeoPot b) {
 //        GeoPot c = new GeoPot(0, 0, 0);
-//        c.x = a.x - b.x;
-//        c.y = a.y - b.y;
-//        c.z = a.z - b.z;
+//        c.x = area.x - b.x;
+//        c.y = area.y - b.y;
+//        c.z = area.z - b.z;
 //        return c;
 //    }
 

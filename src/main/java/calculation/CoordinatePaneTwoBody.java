@@ -1,9 +1,9 @@
 package calculation;
-
 /**
  * Created by Maxim Tarasov on 28.11.2016.
  */
 
+import model.Satellite;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.*;
@@ -18,7 +18,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import utils.*;
 
-import java.time.LocalDate;
 import java.util.*;
 
 public class CoordinatePaneTwoBody extends GridPane {
@@ -225,12 +224,17 @@ public class CoordinatePaneTwoBody extends GridPane {
                     getV1y0Input().setText(String.valueOf(2669.451));
                     getV1z0Input().setText(String.valueOf(0.0));
                 } else if (buttonExperiment.isSelected()) {
-                    getX10Input().setText(String.valueOf(6700000.0));
-                    getY10Input().setText(String.valueOf(0.0));
+                    getX10Input().setText(String.valueOf(6999999.009900649));
+                    getY10Input().setText(String.valueOf(-0.00003216515866031456));
+//                    getY10Input().setText(String.valueOf(500.0));
                     getZ10Input().setText(String.valueOf(0.0));
-                    getV1x0Input().setText(String.valueOf(0.0));
-                    getV1y0Input().setText(String.valueOf(7713.0));
+                    getV1x0Input().setText(String.valueOf(0.000000034674285892022604));
+//                    getV1x0Input().setText(String.valueOf(-0.5756078209255236));
+                    getV1y0Input().setText(String.valueOf(7546.052219933198));
+//                    getV1y0Input().setText(String.valueOf(7713.144800402017));
                     getV1z0Input().setText(String.valueOf(0.0));
+                    getW1zInput().setText(String.valueOf(0.0010780076124668337));
+//                    getW1zInput().setText(String.valueOf(0.0011512156418510473));
                 }
             }
         });
@@ -346,12 +350,18 @@ public class CoordinatePaneTwoBody extends GridPane {
                     getV2y0Input().setText(String.valueOf(2669.451));
                     getV2z0Input().setText(String.valueOf(0.0));
                 } else if (button2Experiment.isSelected()) {
-                    getX20Input().setText(String.valueOf(6700000.0));
-                    getY20Input().setText(String.valueOf(0.0));
+                    getX20Input().setText(String.valueOf(7000099.009935114));
+//                    getX20Input().setText(String.valueOf(6700000.0));
+                    getY20Input().setText(String.valueOf(0.0032165158660314563));
+//                    getY20Input().setText(String.valueOf(-500.0));
                     getZ20Input().setText(String.valueOf(0.0));
-                    getV2x0Input().setText(String.valueOf(0.0));
-                    getV2y0Input().setText(String.valueOf(7713.0));
+                    getV2x0Input().setText(String.valueOf(-0.00000346742858920226));
+//                    getV2x0Input().setText(String.valueOf(0.5756078209255236));
+                    getV2y0Input().setText(String.valueOf(7546.160020731599));
+//                    getV2y0Input().setText(String.valueOf(7713.144800402017));
                     getV2z0Input().setText(String.valueOf(0.0));
+                    getW2zInput().setText(String.valueOf(0.0010780076124668337));
+//                    getW2zInput().setText(String.valueOf(0.0011512156418510473));
                 }
             }
         });
@@ -385,66 +395,124 @@ public class CoordinatePaneTwoBody extends GridPane {
                 yAxis.setLabel("Energy");
                 final LineChart<Number, Number> lineChart = new
                         LineChart<>(xAxis, yAxis);
-                XYChart.Series series = new XYChart.Series();
-                List<List<Double>> result = CalculationUtils.calculateTwoBody(
-                        NumberUtils.parseTextAsDouble(t0Input), NumberUtils.parseTextAsDouble(dtInput),
-                        NumberUtils.parseTextAsDouble(tMaxInput), NumberUtils.parseTextAsDouble(x10Input),
-                        NumberUtils.parseTextAsDouble(y10Input), NumberUtils.parseTextAsDouble(z10Input),
-                        NumberUtils.parseTextAsDouble(x20Input), NumberUtils.parseTextAsDouble(y20Input),
-                        NumberUtils.parseTextAsDouble(z20Input), NumberUtils.parseTextAsDouble(V1x0Input),
-                        NumberUtils.parseTextAsDouble(V1y0Input), NumberUtils.parseTextAsDouble(V1z0Input),
-                        NumberUtils.parseTextAsDouble(V2x0Input), NumberUtils.parseTextAsDouble(V2y0Input),
-                        NumberUtils.parseTextAsDouble(V2z0Input), NumberUtils.parseTextAsDouble(q1wInput),
-                        NumberUtils.parseTextAsDouble(q1xInput), NumberUtils.parseTextAsDouble(q1yInput),
-                        NumberUtils.parseTextAsDouble(q1zInput), NumberUtils.parseTextAsDouble(q2wInput),
-                        NumberUtils.parseTextAsDouble(q2xInput), NumberUtils.parseTextAsDouble(q2yInput),
-                        NumberUtils.parseTextAsDouble(q2zInput), NumberUtils.parseTextAsDouble(w1xInput),
-                        NumberUtils.parseTextAsDouble(w1yInput), NumberUtils.parseTextAsDouble(w1zInput),
-                        NumberUtils.parseTextAsDouble(w2xInput), NumberUtils.parseTextAsDouble(w2yInput),
-                        NumberUtils.parseTextAsDouble(w2zInput), NumberUtils.parseTextAsDouble(J1xxInput),
-                        NumberUtils.parseTextAsDouble(J1yyInput), NumberUtils.parseTextAsDouble(J1zzInput),
-                        NumberUtils.parseTextAsDouble(J2xxInput), NumberUtils.parseTextAsDouble(J2yyInput),
-                        NumberUtils.parseTextAsDouble(J2zzInput),
-                        checkBoxGeoPot.isSelected(), checkBoxSunGravity.isSelected(), checkBoxMoonGravity.isSelected(),
-                        checkBoxSunPres.isSelected(), checkBoxDrag.isSelected(),
-                        NumberUtils.parseTextAsDouble(tetherRestitutionInput), NumberUtils.parseTextAsDouble(tetherLengthInput)
-                );
+                XYChart.Series<Number, Number> series = new XYChart.Series<>();
 
-                List<Double> x1 = result.get(0);
-                List<Double> y1 = result.get(1);
-                List<Double> z1 = result.get(2);
-                List<Double> v1x = result.get(3);
-                List<Double> v1y = result.get(4);
-                List<Double> v1z = result.get(5);
-                List<Double> x2 = result.get(6);
-                List<Double> y2 = result.get(7);
-                List<Double> z2 = result.get(8);
-                List<Double> v2x = result.get(9);
-                List<Double> v2y = result.get(10);
-                List<Double> v2z = result.get(11);
+                double t = NumberUtils.parseTextAsDouble(t0Input);
+                double dt = NumberUtils.parseTextAsDouble(dtInput);
+                double tMax = NumberUtils.parseTextAsDouble(tMaxInput);
+
+                double x1 = NumberUtils.parseTextAsDouble(x10Input);
+                double y1 = NumberUtils.parseTextAsDouble(y10Input);
+                double z1 = NumberUtils.parseTextAsDouble(z10Input);
+                double v1x = NumberUtils.parseTextAsDouble(V1x0Input);
+                double v1y = NumberUtils.parseTextAsDouble(V1y0Input);
+                double v1z = NumberUtils.parseTextAsDouble(V1z0Input);
+                double q1w = NumberUtils.parseTextAsDouble(q1wInput);
+                double q1x = NumberUtils.parseTextAsDouble(q1xInput);
+                double q1y = NumberUtils.parseTextAsDouble(q1yInput);
+                double q1z = NumberUtils.parseTextAsDouble(q1zInput);
+                double w1x = NumberUtils.parseTextAsDouble(w1xInput);
+                double w1y = NumberUtils.parseTextAsDouble(w1yInput);
+                double w1z = NumberUtils.parseTextAsDouble(w1zInput);
+                double i1x = NumberUtils.parseTextAsDouble(J1xxInput);
+                double i1y = NumberUtils.parseTextAsDouble(J1yyInput);
+                double i1z = NumberUtils.parseTextAsDouble(J1zzInput);
+
+                double x2 = NumberUtils.parseTextAsDouble(x20Input);
+                double y2 = NumberUtils.parseTextAsDouble(y20Input);
+                double z2 = NumberUtils.parseTextAsDouble(z20Input);
+                double v2x = NumberUtils.parseTextAsDouble(V2x0Input);
+                double v2y = NumberUtils.parseTextAsDouble(V2y0Input);
+                double v2z = NumberUtils.parseTextAsDouble(V2z0Input);
+                double q2w = NumberUtils.parseTextAsDouble(q2wInput);
+                double q2x = NumberUtils.parseTextAsDouble(q2xInput);
+                double q2y = NumberUtils.parseTextAsDouble(q2yInput);
+                double q2z = NumberUtils.parseTextAsDouble(q2zInput);
+                double w2x = NumberUtils.parseTextAsDouble(w2xInput);
+                double w2y = NumberUtils.parseTextAsDouble(w2yInput);
+                double w2z = NumberUtils.parseTextAsDouble(w2zInput);
+                double i2x = NumberUtils.parseTextAsDouble(J2xxInput);
+                double i2y = NumberUtils.parseTextAsDouble(J2yyInput);
+                double i2z = NumberUtils.parseTextAsDouble(J2zzInput);
+
+                // FIXME ADD AREA
+                double areaOne = 19.63495;
+                double areaTwo = 314.1592;
+                // TODO MASS TO GUI
+                double massOne = 10000;
+                double massTwo = 100;
+                double c = 2.4;
+                // TODO ABSOLUTE
+//                Satellite satelliteOne = new Satellite(x1, y1, z1, v1x, v1y, v1z, i1x, i1y, i1z, massOne, areaOne, c);
+//                Satellite satelliteTwo = new Satellite(x2, y2, z2, v2x, v2y, v2z, i2x, i2y, i2z, massTwo, areaTwo, c);
+                // TODO RELATIVE
+                double m0 = massOne + massTwo;
+                double x0 = (massOne * x1 + massTwo * x2) / m0;
+                double y0 = (massOne * y1 + massTwo * y2) / m0;
+                double z0 = (massOne * z1 + massTwo * z2) / m0;
+                double v0x = (massOne * v1x + massTwo * v2x) / m0;
+                double v0y = (massOne * v1y + massTwo * v2y) / m0;
+                double v0z = (massOne * v1z + massTwo * v2z) / m0;
+                Satellite satelliteOne = new Satellite(x1 - x0, y1 - y0, z1 - z0, v1x - v0x, v1y - v0y, v1z - v0z,
+                        i1x, i1y, i1z, massOne, areaOne, c);
+                Satellite satelliteTwo = new Satellite(x2 - x0, y2 - y0, z2 - z0, v2x - v0x, v2y - v0y, v2z - v0z,
+                        i2x, i2y, i2z, massTwo, areaTwo, c);
+                Satellite satelliteCenter = new Satellite(x0, y0, z0, v0x, v0y, v0z, m0);
+                System.out.println("CHECK");
+                System.out.println("bbOne = " + satelliteOne.bb);
+                System.out.println("bbTwo = " + satelliteTwo.bb);
+                System.out.println("rp = " + satelliteOne.stateVector.x + " " + satelliteOne.stateVector.y + " " + satelliteOne.stateVector.z);
+                System.out.println("right = " + satelliteTwo.stateVector.x * satelliteTwo.m / satelliteOne.m + " " + satelliteTwo.stateVector.y * satelliteTwo.m / satelliteOne.m + " " + satelliteTwo.stateVector.z * satelliteTwo.m / satelliteOne.m);
+
+                Quaternion quaternionOne = new Quaternion(q1w, q1x, q1y, q1z, w1x, w1y, w1z);
+                Quaternion quaternionTwo = new Quaternion(q2w, q2x, q2y, q2z, w2x, w2y, w2z);
+                BooleansForIntegration bool = new BooleansForIntegration(checkBoxGeoPot.isSelected(),
+                        checkBoxSunGravity.isSelected(), checkBoxMoonGravity.isSelected(),
+                        checkBoxSunPres.isSelected(), checkBoxDrag.isSelected());
+
+                // TODO ABSOLUTE
+//                RungeKuttaMethod.twoBody(t, dt, tMax, satelliteOne, satelliteTwo, quaternionOne, quaternionTwo, bool,
+//                        NumberUtils.parseTextAsDouble(tetherRestitutionInput), NumberUtils.parseTextAsDouble(tetherLengthInput));
+                // TODO RELATIVE
+                RungeKuttaMethod.twoBodyRelative(t, dt, tMax, satelliteCenter, satelliteOne, satelliteTwo, quaternionOne, quaternionTwo, bool,
+                        NumberUtils.parseTextAsDouble(tetherRestitutionInput), NumberUtils.parseTextAsDouble(tetherLengthInput));
+
+//                List<Double> x1 = result.get(0);
+//                List<Double> y1 = result.get(1);
+//                List<Double> z1 = result.get(2);
+//                List<Double> v1x = result.get(3);
+//                List<Double> v1y = result.get(4);
+//                List<Double> v1z = result.get(5);
+//                List<Double> x2 = result.get(6);
+//                List<Double> y2 = result.get(7);
+//                List<Double> z2 = result.get(8);
+//                List<Double> v2x = result.get(9);
+//                List<Double> v2y = result.get(10);
+//                List<Double> v2z = result.get(11);
 //                double G = 6.67 * Math.pow(10, -11);
 //                double M = 5.9726 * Math.pow(10, 24);
-                double mu = 398600.4415E9;
-                for (int i = 0; i < x1.size(); i++) {
-                    double xyz1 = Math.sqrt(x1.get(i) * x1.get(i) + y1.get(i) * y1.get(i) + z1.get(i) * z1.get(i));
-                    double xyz2 = Math.sqrt(x2.get(i) * x2.get(i) + y2.get(i) * y2.get(i) + z2.get(i) * z2.get(i));
-                    double dx = Math.abs(xyz1 - xyz2);
-                    if (dx > NumberUtils.parseTextAsDouble(tetherLengthInput)) {
-                        dx = dx - NumberUtils.parseTextAsDouble(tetherLengthInput);
-                    } else {
-                        dx = 0;
-                    }
-                    series.getData().add(new XYChart.Data(i, (Math.pow(v1x.get(i), 2) + Math.pow(v1y.get(i), 2) + Math.pow(v1z.get(i), 2)) / 2 +
-                            (Math.pow(v2x.get(i), 2) + Math.pow(v2y.get(i), 2) + Math.pow(v2z.get(i), 2)) / 2 -
-                            (mu / xyz1) - (mu / xyz2) - (NumberUtils.parseTextAsDouble(tetherRestitutionInput) * dx * dx) / 2));
-                }
-                List resultAngles = Kepler.convertToKepler(NumberUtils.parseTextAsDouble(x10Input),
-                        NumberUtils.parseTextAsDouble(y10Input), NumberUtils.parseTextAsDouble(z10Input),
-                        NumberUtils.parseTextAsDouble(V1x0Input), NumberUtils.parseTextAsDouble(V1y0Input),
-                        NumberUtils.parseTextAsDouble(V1z0Input));
-                String spacing = "\t\t\t";
-                String elements = String.join(spacing, resultAngles.toString());
-                WritingUtils.write(CalculationUtils.fileName.getName(), elements);
+//                double mu = 398600.4415E9;
+//                for (int qw = 0; qw < x1.size(); qw++) {
+//                    double xyz1 = Math.sqrt(x1.get(qw) * x1.get(qw) + y1.get(qw) * y1.get(qw) + z1.get(qw) * z1.get(qw));
+//                    double xyz2 = Math.sqrt(x2.get(qw) * x2.get(qw) + y2.get(qw) * y2.get(qw) + z2.get(qw) * z2.get(qw));
+//                    double dx = Math.abs(xyz1 - xyz2);
+//                    if (dx > NumberUtils.parseTextAsDouble(tetherLengthInput)) {
+//                        dx = dx - NumberUtils.parseTextAsDouble(tetherLengthInput);
+//                    } else {
+//                        dx = 0;
+//                    }
+//                    series.getData().add(new XYChart.Data(qw, (Math.pow(v1x.get(qw), 2) + Math.pow(v1y.get(qw), 2) + Math.pow(v1z.get(qw), 2)) / 2 +
+//                            (Math.pow(v2x.get(qw), 2) + Math.pow(v2y.get(qw), 2) + Math.pow(v2z.get(qw), 2)) / 2 -
+//                            (mu / xyz1) - (mu / xyz2) - (NumberUtils.parseTextAsDouble(tetherRestitutionInput) * dx * dx) / 2));
+//                }
+//                List resultAngles = Kepler.convertToKepler(NumberUtils.parseTextAsDouble(x10Input),
+//                        NumberUtils.parseTextAsDouble(y10Input), NumberUtils.parseTextAsDouble(z10Input),
+//                        NumberUtils.parseTextAsDouble(V1x0Input), NumberUtils.parseTextAsDouble(V1y0Input),
+//                        NumberUtils.parseTextAsDouble(V1z0Input));
+//                String spacing = "\t\t\t";
+//                String elements = String.join(spacing, resultAngles.toString());
+                //fixme
+//                FileTextWriter.write(MainForcesAbsolute.fileName.getName(), elements);
                 series.setName("Energy");
                 lineChart.getData().add(series);
                 lineChart.setCreateSymbols(false);
@@ -527,25 +595,25 @@ public class CoordinatePaneTwoBody extends GridPane {
 //            ArrayList<ArrayList<Double>> earthRotation = Matrix.identityMatrix(3);
 //            ArrayList<ArrayList<Double>> pole = Matrix.identityMatrix(3);
 //            if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
-//                precession = EcefEci.precessionMatrix(c);
+//                precession = ECEF_ECI_CONVERSION.precessionMatrix(c);
 //            } else if (checkBoxPrecession.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
-//                precession = Matrix.transpose(EcefEci.precessionMatrix(c));
+//                precession = Matrix.transpose(ECEF_ECI_CONVERSION.precessionMatrix(c));
 //            }
 //            if (checkBoxNutation.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
-//                nutation = EcefEci.nutationMatrix(c);
+//                nutation = ECEF_ECI_CONVERSION.nutationMatrix(c);
 //            } else if (checkBoxNutation.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
-//                nutation = Matrix.transpose(EcefEci.nutationMatrix(c));
+//                nutation = Matrix.transpose(ECEF_ECI_CONVERSION.nutationMatrix(c));
 //            }
 //            if (checkBoxER.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
-//                earthRotation = EcefEci.rotationMatrix(c);
+//                earthRotation = ECEF_ECI_CONVERSION.rotationMatrix(c);
 //            } else if (checkBoxER.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
-//                earthRotation = Matrix.transpose(EcefEci.rotationMatrix(c));
+//                earthRotation = Matrix.transpose(ECEF_ECI_CONVERSION.rotationMatrix(c));
 //            }
 //
 //            if (checkBoxPM.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECEF")) {
-//                pole = EcefEci.poleMatrix(c);
+//                pole = ECEF_ECI_CONVERSION.poleMatrix(c);
 //            } else if (checkBoxPM.isSelected() && Objects.equals(conversionToECEFButton.getText(), "Conversion To ECI")) {
-//                pole = Matrix.transpose(EcefEci.poleMatrix(c));
+//                pole = Matrix.transpose(ECEF_ECI_CONVERSION.poleMatrix(c));
 //            }
 //
 //            ArrayList<Double> initialCoordinates = new ArrayList<>();
@@ -734,5 +802,13 @@ public class CoordinatePaneTwoBody extends GridPane {
 
     public TextField getZ20Input() {
         return z20Input;
+    }
+
+    public TextField getW1zInput() {
+        return w1zInput;
+    }
+
+    public TextField getW2zInput() {
+        return w2zInput;
     }
 }

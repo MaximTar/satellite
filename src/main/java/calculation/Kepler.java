@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Kepler {
-    public static ArrayList convertToCoordinate(double omega, double i, double w, double p, double e, double tau) {
+    public static ArrayList<Double> convertToCoordinate(double omega, double i, double w, double p, double e, double tau) {
 
 //        final double MU = 4.0362e14;
         final double MU = 398600.4415E9;
@@ -14,8 +14,8 @@ public class Kepler {
         double W = Math.toRadians(w);
         double C = Math.sqrt(p * MU);
         double a = p / (1 - e * e);
-//        System.out.println('a');
-//        System.out.println(a);
+//        System.out.println('area');
+//        System.out.println(area);
         double T = 2 * Math.PI * Math.sqrt(a * a * a / MU);
 //        System.out.println('T');
 //        System.out.println(T);
@@ -61,7 +61,7 @@ public class Kepler {
         return resList;
     }
 
-    public static ArrayList convertToKepler(double x, double y, double z, double vx, double vy, double vz) {
+    public static ArrayList<Double> convertToKepler(double x, double y, double z, double vx, double vy, double vz) {
 
 //        final double MU = 4.0362e14;
         final double MU = 398600.4415E9;
@@ -107,8 +107,8 @@ public class Kepler {
         double T = 2 * Math.PI * Math.sqrt(a * a * a / MU);
 //        System.out.println('T');
 //        System.out.println(T);
-//        System.out.println('a');
-//        System.out.println(a);
+//        System.out.println('area');
+//        System.out.println(area);
 
 //        double v = Math.acos((p / r - 1.) / e);
 //        System.out.println('v');
@@ -147,8 +147,8 @@ public class Kepler {
 
 //        double tau = NumberUtils.round((-p * p / c) * NumberUtils.round(integral(100000, 0, v, e), 4), 4);
 //        double E1 = 2 * Math.atan(Math.sqrt((1 - e) / (1 + e)) * Math.tan(v / 2));
-//        double a = p / (1 - e * e);
-//        double n = Math.sqrt(MU) / Math.pow(a, 3. / 2);
+//        double area = p / (1 - e * e);
+//        double n = Math.sqrt(MU) / Math.pow(area, 3. / 2);
 //        double diff = (E1 - e * Math.sin(E1)) / n;
         double tau = (-p * p / c) * integral(100000, 0, v, e);
         if (Double.isNaN(tau)) {
@@ -166,7 +166,7 @@ public class Kepler {
         double ky = c2 / c;
         double kz = c3 / c;
 
-//        double i = Math.acos(c3 / c);
+//        double qw = Math.acos(c3 / c);
         double i = Math.acos(kz);
         if (Double.isNaN(i)) {
             i = 0;
@@ -251,30 +251,30 @@ public class Kepler {
 //    }
 //
 //    public static double dichotomy(double e, double mu, double p, double C, double tau, double acc) {
-//        double a = -1000;
+//        double area = -1000;
 //        double b = 1000;
-//        double c = (a + b) / 2.;
+//        double c = (area + b) / 2.;
 //
-//        while ((b - a) > acc) {
-//            if (Double.isNaN(anomaly_function(e, mu, p, C, tau, a)) || Double.isNaN(anomaly_function(e, mu, p, C, tau, b)) ||
+//        while ((b - area) > acc) {
+//            if (Double.isNaN(anomaly_function(e, mu, p, C, tau, area)) || Double.isNaN(anomaly_function(e, mu, p, C, tau, b)) ||
 //                    Double.isNaN(anomaly_function(e, mu, p, C, tau, c))) {
 //                return 0;
 //            }
-//            if (anomaly_function(e, mu, p, C, tau, a) * anomaly_function(e, mu, p, C, tau, c) < 0) {
+//            if (anomaly_function(e, mu, p, C, tau, area) * anomaly_function(e, mu, p, C, tau, c) < 0) {
 //                b = c;
-//                c = (a + b) / 2.;
+//                c = (area + b) / 2.;
 //            } else if (anomaly_function(e, mu, p, C, tau, c) * anomaly_function(e, mu, p, C, tau, b) < 0) {
-//                a = c;
-//                c = (a + b) / 2.;
-//            } else if (anomaly_function(e, mu, p, C, tau, a) == 0) {
-//                return a;
+//                area = c;
+//                c = (area + b) / 2.;
+//            } else if (anomaly_function(e, mu, p, C, tau, area) == 0) {
+//                return area;
 //            } else if (anomaly_function(e, mu, p, C, tau, b) == 0) {
 //                return b;
 //            } else if (anomaly_function(e, mu, p, C, tau, c) == 0) {
 //                return c;
 //            }
 //        }
-//        return a;
+//        return area;
 //    }
 
 

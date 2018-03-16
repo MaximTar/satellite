@@ -1,6 +1,7 @@
 package utils;
 
-import java.io.File;
+import model.StateVector;
+
 import java.util.*;
 
 /**
@@ -8,53 +9,56 @@ import java.util.*;
  */
 public class Quaternion {
 
-    public double i, j, k, l, wx, wy, wz, M;
-    public static File fileName;
-    public static double ix = CalculationUtils.getJ1xx();
-    public static double iy = CalculationUtils.getJ1yy();
-    public static double iz = CalculationUtils.getJ1zz();
+    public double qw, qx, qy, qz, wx, wy, wz, M;
 
-    public Quaternion(double i, double j, double k, double l) {
-        this.i = i;
-        this.j = j;
-        this.k = k;
-        this.l = l;
+    public Quaternion(double qw, double qx, double qy, double qz) {
+        this.qw = qw;
+        this.qx = qx;
+        this.qy = qy;
+        this.qz = qz;
     }
 
-    Quaternion(double i, double j, double k, double l, double wx, double wy, double wz) {
-        this.i = i;
-        this.j = j;
-        this.k = k;
-        this.l = l;
+    public Quaternion(double qw, double qx, double qy, double qz, double wx, double wy, double wz) {
+        this.qw = qw;
+        this.qx = qx;
+        this.qy = qy;
+        this.qz = qz;
         this.wx = wx;
         this.wy = wy;
         this.wz = wz;
     }
 
-    Quaternion(double i, double j, double k, double l, double wx, double wy, double wz, double M) {
-        this.i = i;
-        this.j = j;
-        this.k = k;
-        this.l = l;
+    public Quaternion(double qw, double qx, double qy, double qz, double wx, double wy, double wz, double M) {
+        this.qw = qw;
+        this.qx = qx;
+        this.qy = qy;
+        this.qz = qz;
         this.wx = wx;
         this.wy = wy;
         this.wz = wz;
         this.M = M;
     }
 
-    public Quaternion(double i, List<Double> a) {
-        this.i = i;
-        this.j = a.get(0);
-        this.k = a.get(1);
-        this.l = a.get(2);
+    public Quaternion(double qw, List<Double> a) {
+        this.qw = qw;
+        this.qx = a.get(0);
+        this.qy = a.get(1);
+        this.qz = a.get(2);
+    }
+
+    public Quaternion(double qw, double[] a) {
+        this.qw = qw;
+        this.qx = a[0];
+        this.qy = a[1];
+        this.qz = a[2];
     }
 
     public static Quaternion sum(Quaternion a, Quaternion b) {
         Quaternion c = new Quaternion(0, 0, 0, 0, 0, 0, 0);
-        c.i = a.i + b.i;
-        c.j = a.j + b.j;
-        c.k = a.k + b.k;
-        c.l = a.l + b.l;
+        c.qw = a.qw + b.qw;
+        c.qx = a.qx + b.qx;
+        c.qy = a.qy + b.qy;
+        c.qz = a.qz + b.qz;
         c.wx = a.wx + b.wx;
         c.wy = a.wy + b.wy;
         c.wz = a.wz + b.wz;
@@ -63,42 +67,56 @@ public class Quaternion {
 
     public static Quaternion mult(double a, Quaternion b) {
         Quaternion c = new Quaternion(0, 0, 0, 0, 0, 0, 0);
-        c.i = a * b.i;
-        c.j = a * b.j;
-        c.k = a * b.k;
-        c.l = a * b.l;
+        c.qw = a * b.qw;
+        c.qx = a * b.qx;
+        c.qy = a * b.qy;
+        c.qz = a * b.qz;
         c.wx = a * b.wx;
         c.wy = a * b.wy;
         c.wz = a * b.wz;
         return c;
     }
 
+//    public static Quaternion quatMultQuat(Quaternion a, Quaternion b) {
+//        Quaternion c = new Quaternion(0, 0, 0, 0);
+//        ArrayList<Double> va = new ArrayList<>();
+//        ArrayList<Double> vb = new ArrayList<>();
+//        List<Double> vc;
+//        Collections.addAll(va, a.qx, a.qy, a.qz);
+//        Collections.addAll(vb, b.qx, b.qy, b.qz);
+//        c.qw = a.qw * b.qw - VectorAlgebra.multS(va, vb);
+//        vc = VectorAlgebra.sum(VectorAlgebra.sum(VectorAlgebra.constMult(a.qw, vb), VectorAlgebra.constMult(b.qw, va)),
+//                VectorAlgebra.multV(va, vb));
+//        c.qx = vc.get(0);
+//        c.qy = vc.get(1);
+//        c.qz = vc.get(2);
+//        return c;
+//    }
+
     public static Quaternion quatMultQuat(Quaternion a, Quaternion b) {
         Quaternion c = new Quaternion(0, 0, 0, 0);
-        ArrayList va = new ArrayList();
-        ArrayList vb = new ArrayList();
-        List<Double> vc;
-        Collections.addAll(va, a.j, a.k, a.l);
-        Collections.addAll(vb, b.j, b.k, b.l);
-        c.i = a.i * b.i - VectorsAlgebra.multS(va, vb);
-        vc = VectorsAlgebra.sum(VectorsAlgebra.sum(VectorsAlgebra.constMult(a.i, vb), VectorsAlgebra.constMult(b.i, va)),
-                VectorsAlgebra.multV(va, vb));
-        c.j = vc.get(0);
-        c.k = vc.get(1);
-        c.l = vc.get(2);
+        double[] va = new double[]{a.qx, a.qy, a.qz};
+        double[] vb = new double[]{b.qx, b.qy, b.qz};
+
+        c.qw = a.qw * b.qw - VectorAlgebra.multS(va, vb);
+        double[] vc = VectorAlgebra.sum(VectorAlgebra.sum(VectorAlgebra.constMult(a.qw, vb), VectorAlgebra.constMult(b.qw, va)),
+                VectorAlgebra.multV(va, vb));
+        c.qx = vc[0];
+        c.qy = vc[1];
+        c.qz = vc[2];
         return c;
     }
 
 
     public static Quaternion normalize(Quaternion q) {
-        return new Quaternion(q.i / Math.sqrt(q.i * q.i + q.j * q.j + q.k * q.k + q.l * q.l),
-                q.j / Math.sqrt(q.i * q.i + q.j * q.j + q.k * q.k + q.l * q.l),
-                q.k / Math.sqrt(q.i * q.i + q.j * q.j + q.k * q.k + q.l * q.l),
-                q.l / Math.sqrt(q.i * q.i + q.j * q.j + q.k * q.k + q.l * q.l));
+        return new Quaternion(q.qw / Math.sqrt(q.qw * q.qw + q.qx * q.qx + q.qy * q.qy + q.qz * q.qz),
+                q.qx / Math.sqrt(q.qw * q.qw + q.qx * q.qx + q.qy * q.qy + q.qz * q.qz),
+                q.qy / Math.sqrt(q.qw * q.qw + q.qx * q.qx + q.qy * q.qy + q.qz * q.qz),
+                q.qz / Math.sqrt(q.qw * q.qw + q.qx * q.qx + q.qy * q.qy + q.qz * q.qz));
     }
 
     public static Quaternion conjugate(Quaternion q) {
-        return new Quaternion(q.i, -q.j, -q.k, -q.l);
+        return new Quaternion(q.qw, -q.qx, -q.qy, -q.qz);
     }
 
     public static ArrayList<ArrayList<Double>> rotMatrix(Quaternion q) {
@@ -108,15 +126,15 @@ public class Quaternion {
         ArrayList<Double> line2 = new ArrayList<>();
         ArrayList<Double> line3 = new ArrayList<>();
 
-        double a11 = 1 - 2 * intermediate.k * intermediate.k - 2 * intermediate.l * intermediate.l;
-        double a12 = 2 * intermediate.j * intermediate.k - 2 * intermediate.i * intermediate.l;
-        double a13 = 2 * intermediate.j * intermediate.l + 2 * intermediate.i * intermediate.k;
-        double a21 = 2 * intermediate.j * intermediate.k + 2 * intermediate.i * intermediate.l;
-        double a22 = 1 - 2 * intermediate.j * intermediate.j - 2 * intermediate.l * intermediate.l;
-        double a23 = 2 * intermediate.k * intermediate.l - 2 * intermediate.i * intermediate.j;
-        double a31 = 2 * intermediate.j * intermediate.l - 2 * intermediate.i * intermediate.k;
-        double a32 = 2 * intermediate.k * intermediate.l + 2 * intermediate.i * intermediate.j;
-        double a33 = 1 - 2 * intermediate.j * intermediate.j - 2 * intermediate.k * intermediate.k;
+        double a11 = 1 - 2 * intermediate.qy * intermediate.qy - 2 * intermediate.qz * intermediate.qz;
+        double a12 = 2 * intermediate.qx * intermediate.qy - 2 * intermediate.qw * intermediate.qz;
+        double a13 = 2 * intermediate.qx * intermediate.qz + 2 * intermediate.qw * intermediate.qy;
+        double a21 = 2 * intermediate.qx * intermediate.qy + 2 * intermediate.qw * intermediate.qz;
+        double a22 = 1 - 2 * intermediate.qx * intermediate.qx - 2 * intermediate.qz * intermediate.qz;
+        double a23 = 2 * intermediate.qy * intermediate.qz - 2 * intermediate.qw * intermediate.qx;
+        double a31 = 2 * intermediate.qx * intermediate.qz - 2 * intermediate.qw * intermediate.qy;
+        double a32 = 2 * intermediate.qy * intermediate.qz + 2 * intermediate.qw * intermediate.qx;
+        double a33 = 1 - 2 * intermediate.qx * intermediate.qx - 2 * intermediate.qy * intermediate.qy;
 
         Collections.addAll(line1, a11, a12, a13);
         Collections.addAll(line2, a21, a22, a23);
@@ -132,10 +150,10 @@ public class Quaternion {
         ArrayList<Double> line2 = new ArrayList<>();
         ArrayList<Double> line3 = new ArrayList<>();
 
-        double a = intermediate.i;
-        double b = intermediate.j;
-        double c = intermediate.k;
-        double d = intermediate.l;
+        double a = intermediate.qw;
+        double b = intermediate.qx;
+        double c = intermediate.qy;
+        double d = intermediate.qz;
         double aSq = a * a;
         double bSq = b * b;
         double cSq = c * c;
@@ -211,146 +229,84 @@ public class Quaternion {
         return bodyPositionData;
     }
 
-    public static Quaternion F(Quaternion U, double t, CalculationUtils C) {
-        double mu = 398600.4415E9;
-        double x = C.x;
-        double y = C.y;
-        double z = C.z;
+    public static Quaternion F(Quaternion U, double t, StateVector stateVector, Tensor I) {
+        double mu = Constant.MU;
+        double x = stateVector.x;
+        double y = stateVector.y;
+        double z = stateVector.z;
         double R = Math.sqrt(x * x + y * y + z * z);
 
 //        Quaternion res = Quaternion.quatMultQuat(new Quaternion(0, U.wx, U.wy, U.wz), U);
-        Quaternion res = Quaternion.quatMultQuat(new Quaternion(U.i, U.j, U.k, U.l), new Quaternion(0, U.wx, U.wy, U.wz));
-        res.i = (1. / 2.) * res.i;
-        res.j = (1. / 2.) * res.j;
-        res.k = (1. / 2.) * res.k;
-        res.l = (1. / 2.) * res.l;
-        res.wx = (1. / ix) * (iy - iz) * U.wy * U.wz;
-        res.wy = (1. / iy) * (iz - ix) * U.wx * U.wz;
-        res.wz = (1. / iz) * (ix - iy) * U.wx * U.wy;
+        Quaternion res = Quaternion.quatMultQuat(new Quaternion(U.qw, U.qx, U.qy, U.qz), new Quaternion(0, U.wx, U.wy, U.wz));
+        res.qw = 0.5 * res.qw;
+        res.qx = 0.5 * res.qx;
+        res.qy = 0.5 * res.qy;
+        res.qz = 0.5 * res.qz;
+        res.wx = (1. / I.ix) * (I.iy - I.iz) * U.wy * U.wz;
+        res.wy = (1. / I.iy) * (I.iz - I.ix) * U.wx * U.wz;
+        res.wz = (1. / I.iz) * (I.ix - I.iy) * U.wx * U.wy;
 
         // Гравитационный момент
         double koeff = 3 * mu / Math.pow(R, 3);
         // Er
-        List<Double> er = new ArrayList<>(Arrays.asList(-x / R, -y / R, -z / R));
-        er = VectorsAlgebra.normalize(er);
+        double[] er = new double[]{-x / R, -y / R, -z / R};
+        er = VectorAlgebra.normalize(er);
 
         // L*Er*~L
         Quaternion erq = new Quaternion(0, er);
-        Quaternion L = new Quaternion(U.i, U.j, U.k, U.l);
+        Quaternion L = new Quaternion(U.qw, U.qx, U.qy, U.qz);
         L = Quaternion.conjugate(L);
 
         Quaternion erf = Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, erq), Quaternion.conjugate(L));
 
-        er.clear();
-        Collections.addAll(er, erf.j, erf.k, erf.l);
-        er = VectorsAlgebra.normalize(er);
+        er[0] = erf.qx;
+        er[1] = erf.qy;
+        er[2] = erf.qz;
+        er = VectorAlgebra.normalize(er);
 
         // J*Er
-        List<Double> Jer = new ArrayList<>(Arrays.asList(er.get(0) * ix, er.get(1) * iy, er.get(2) * iz));
+        double[] Jer = new double[]{er[0] * I.ix, er[1] * I.iy, er[2] * I.iz};
 
         // Er x J*Er
-        List<Double> quaziM = VectorsAlgebra.multV(er, Jer);
-        List<Double> M = VectorsAlgebra.constMult(koeff, quaziM);
+        double[] quaziM = VectorAlgebra.multV(er, Jer);
+        double[] M = VectorAlgebra.constMult(koeff, quaziM);
 
-        res.wx += (1. / ix) * M.get(0);
-        res.wy += (1. / iy) * M.get(1);
-        res.wz += (1. / iz) * M.get(2);
-
+        res.wx += (1. / I.ix) * M[0];
+        res.wy += (1. / I.iy) * M[1];
+        res.wz += (1. / I.iz) * M[2];
         return res;
     }
 
-    public static Quaternion F2(Quaternion U, double t, CalculationUtils C) {
-        Quaternion res = F(U, t, C);
-        List<Double> attachmentPoint = new ArrayList<>(Arrays.asList(10., 0., 0.));
+    public static Quaternion F2(Quaternion U, double t, StateVector stateVector, Tensor I) {
+        Quaternion res = F(U, t, stateVector, I);
 
-        if (CalculationUtils.tensionFFlag) {
-
-            // Перевод F(tension) ECI -> Body
-            List<Double> tensionFBody = new ArrayList<>();
-            Quaternion tensionFECI = new Quaternion(0, CalculationUtils.tensionF);
-            Quaternion L = new Quaternion(U.i, U.j, U.k, U.l);
-            L = Quaternion.conjugate(L);
-            Quaternion tensionFBodyQ = Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, tensionFECI), Quaternion.conjugate(L));
-//            tensionFBody.clear();
-            Collections.addAll(tensionFBody, tensionFBodyQ.j, tensionFBodyQ.k, tensionFBodyQ.l);
-
-            List<Double> tensionM = VectorsAlgebra.multV(attachmentPoint, tensionFBody);
-            res.wx += (1. / ix) * tensionM.get(0);
-            res.wy += (1. / ix) * tensionM.get(1);
-            res.wz += (1. / ix) * tensionM.get(2);
-        }
-
-        return res;
-    }
-
-//    public static ArrayList<ArrayList<Double>> calculateAll(double tM, double dtM, double tMaxM, double l0, double l1, double l2,
-//                                                            double l3, double wx, double wy, double wz) {
-//        ArrayList<Double> iList = new ArrayList<>();
-//        ArrayList<Double> jList = new ArrayList<>();
-//        ArrayList<Double> kList = new ArrayList<>();
-//        ArrayList<Double> lList = new ArrayList<>();
-//        ArrayList<Double> wxList = new ArrayList<>();
-//        ArrayList<Double> wyList = new ArrayList<>();
-//        ArrayList<Double> wzList = new ArrayList<>();
-//        ArrayList<ArrayList<Double>> resList = new ArrayList<>();
-//        ArrayList<ArrayList<Double>> res2List = new ArrayList<>();
-//        ArrayList<ArrayList<Double>> res4List = new ArrayList<>();
-//        Quaternion U = new Quaternion(l0, l1, l2, l3, wx, wy, wz);
-//        Quaternion k1, k2, k3, k4;
-//        Date d = new Date();
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh-mm");
-//        fileName = new File("Quaternion_" + dateFormat.format(d) + ".txt");
+        //TODO FIXME FOR RELATIVE MOTION
+//        List<Double> attachmentPoint = new ArrayList<>(Arrays.asList(10., 0., 0.));
 //
-//        while (tM <= tMaxM) {
-//            k1 = mult(dtM, F(U, tM));
-//            k2 = mult(dtM, F(sum(U, mult(0.5, k1)), tM + 0.5 * dtM));
-//            k3 = mult(dtM, F(sum(U, mult(0.5, k2)), tM + 0.5 * dtM));
-//            k4 = mult(dtM, F(sum(U, k3), tM + dtM));
-//            U = sum(U, mult(1.0 / 6.0, sum(sum(k1, mult(2, k2)), sum(mult(2, k3), k4))));
-//            tM += dtM;
-//            iList.add(U.i);
-//            jList.add(U.j);
-//            kList.add(U.k);
-//            lList.add(U.l);
-//            wxList.add(U.wx);
-//            wyList.add(U.wy);
-//            wzList.add(U.wz);
+//        if (MainForcesAbsolute.tensionFFlag) {
+//            // Перевод force(tension) ECI -> Body
+//            List<Double> tensionFBody = new ArrayList<>();
+//            List<Double> tensionFList = new ArrayList<>(Arrays.asList(MainForcesRelative.tensionF[0], MainForcesRelative.tensionF[1], MainForcesRelative.tensionF[2]));
+//            Quaternion tensionFECI = new Quaternion(0, tensionFList);
+//            Quaternion L = new Quaternion(U.qw, U.qx, U.qy, U.qz);
+//            L = Quaternion.conjugate(L);
+//            Quaternion tensionFBodyQ = Quaternion.quatMultQuat(Quaternion.quatMultQuat(L, tensionFECI), Quaternion.conjugate(L));
+////            tensionFBody.clear();
+//            Collections.addAll(tensionFBody, tensionFBodyQ.qx, tensionFBodyQ.qy, tensionFBodyQ.qz);
 //
-//            Quaternion Q = normalize(U);
-//
-//            String text = String.valueOf(Q.i) + "\t\t\t" + String.valueOf(Q.j) + "\t\t\t" + String.valueOf(Q.k) +
-//                    "\t\t\t" + String.valueOf(Q.l)
-//                    + "\n";
-////            + "\t\t\t" + String.valueOf(U.wx) + "\t\t\t" + String.valueOf(U.wy) +
-////            "\t\t\t" + String.valueOf(U.wz) + "\n";
-//            CalculationUtils.write(fileName.getName(), text);
-////            ArrayList<Double> res3List = new ArrayList<>();
-////            Collections.addAll(res3List, U.i, U.j, U.k, U.l, U.wx, U.wy, U.wz);
-////            res2List.add(res3List);
+//            List<Double> tensionM = VectorAlgebra.multV(attachmentPoint, tensionFBody);
+//            res.wx += (1. / I.ix) * tensionM.get(0);
+//            res.wy += (1. / I.iy) * tensionM.get(1);
+//            res.wz += (1. / I.iz) * tensionM.get(2);
 //        }
 
-//        ArrayList<ArrayList<Double>> bodyPosition = new ArrayList<>();
-//        ArrayList<Double> line1 = new ArrayList<>();
-//        ArrayList<Double> line2 = new ArrayList<>();
-//        ArrayList<Double> line3 = new ArrayList<>();
-//        ArrayList<Double> line4 = new ArrayList<>();
-//        Collections.addAll(line1, -2., 0., 0.);
-//        Collections.addAll(line2, 1., 0., 0.);
-//        Collections.addAll(line3, 1., -4., 0.);
-//        Collections.addAll(line4, 1., 4., 0.);
-//        Collections.addAll(bodyPosition, line1, line2, line3, line4);
-//
-//        res4List = calculation(res2List, bodyPosition);
-//
-//        Collections.addAll(resList, iList, jList, kList, lList, wxList, wyList, wzList);
-//        System.out.println(wxList);
-//        return (res4List);
-//    }
-
-    @Override
-    public String toString() {
-        return "[" + this.i + ", " + this.j + ", " + this.k + ", " + this.l + "]";
+        return res;
     }
+
+//    @Override
+//    public String toString() {
+//        return "[" + this.qw + ", " + this.qx + ", " + this.qy + ", " + this.qz + "]";
+//    }
 
     public static Quaternion fromRotationMatrix(List<List<Double>> rm) {
 
@@ -446,47 +402,61 @@ public class Quaternion {
 
         if (tr > 0) {
             double sqtrp1 = Math.sqrt(tr + 1.0);
-            quaternion.i = 0.5 * sqtrp1;
-            quaternion.j = (m12 - m21) / (2.0 * sqtrp1);
-            quaternion.k = (m20 - m02) / (2.0 * sqtrp1);
-            quaternion.l = (m01 - m10) / (2.0 * sqtrp1);
+            quaternion.qw = 0.5 * sqtrp1;
+            quaternion.qx = (m12 - m21) / (2.0 * sqtrp1);
+            quaternion.qy = (m20 - m02) / (2.0 * sqtrp1);
+            quaternion.qz = (m01 - m10) / (2.0 * sqtrp1);
             return quaternion;
         }
         if ((m11 > m00) && (m11 > m22)) {
             double sqdip1 = Math.sqrt(m11 - m00 - m22 + 1.0);
-            quaternion.k = 0.5 * sqdip1;
+            quaternion.qy = 0.5 * sqdip1;
 
             if (sqdip1 != 0) {
                 sqdip1 = 0.5 / sqdip1;
             }
 
-            quaternion.i = (m20 - m02) * sqdip1;
-            quaternion.j = (m01 + m10) * sqdip1;
-            quaternion.l = (m12 + m21) * sqdip1;
+            quaternion.qw = (m20 - m02) * sqdip1;
+            quaternion.qx = (m01 + m10) * sqdip1;
+            quaternion.qz = (m12 + m21) * sqdip1;
         } else if (m22 > m00) {
             double sqdip1 = Math.sqrt(m22 - m00 - m11 + 1.0);
-            quaternion.k = 0.5 * sqdip1;
+            quaternion.qy = 0.5 * sqdip1;
 
             if (sqdip1 != 0) {
                 sqdip1 = 0.5 / sqdip1;
             }
 
 
-            quaternion.i = (m01 - m10) * sqdip1;
-            quaternion.j = (m20 + m02) * sqdip1;
-            quaternion.k = (m12 + m21) * sqdip1;
+            quaternion.qw = (m01 - m10) * sqdip1;
+            quaternion.qx = (m20 + m02) * sqdip1;
+            quaternion.qy = (m12 + m21) * sqdip1;
         } else {
             double sqdip1 = Math.sqrt(m00 - m11 - m22 + 1.0);
-            quaternion.j = 0.5 * sqdip1;
+            quaternion.qx = 0.5 * sqdip1;
 
             if (sqdip1 != 0) {
                 sqdip1 = 0.5 / sqdip1;
             }
 
-            quaternion.i = (m12 - m21) * sqdip1;
-            quaternion.k = (m01 + m10) * sqdip1;
-            quaternion.k = (m20 + m02) * sqdip1;
+            quaternion.qw = (m12 - m21) * sqdip1;
+            quaternion.qy = (m01 + m10) * sqdip1;
+            quaternion.qy = (m20 + m02) * sqdip1;
         }
         return quaternion;
+    }
+
+    @Override
+    public String toString() {
+        return "Quaternion{" +
+                "qw=" + qw +
+                ", qx=" + qx +
+                ", qy=" + qy +
+                ", qz=" + qz +
+                ", wx=" + wx +
+                ", wy=" + wy +
+                ", wz=" + wz +
+                ", M=" + M +
+                '}';
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="280.0" prefWidth="300.0" spacing="10.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+      fx:controller="com.github.qcha.animation.ChooserController">
+  <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" prefHeight="24.0" prefWidth="147.0"
+         text="Choose file to animate" textAlignment="CENTER" />
+  <Button fx:id="btnOneBodyOrbit" mnemonicParsing="false" onAction="#oneBodyOrbitFileChooser" prefHeight="30.0" prefWidth="220.0"
+          text="One Body Orbit Animation" />
+  <Button fx:id="btnTwoBodiesOrbit" mnemonicParsing="false" onAction="#twoBodiesOrbitFileChooser" prefHeight="30.0" prefWidth="220.0"
+          text="Two Bodies Orbit Animation" />
+  <Button fx:id="btnOneBodyRotation" mnemonicParsing="false" onAction="#oneBodyRotationFileChooser" prefHeight="30.0" prefWidth="220.0"
+          text="One Body Rotation Animation" />
+  <Button fx:id="btnTwoBodiesRotation" mnemonicParsing="false" onAction="#twoBodiesRotationFileChooser" prefHeight="30.0" prefWidth="220.0"
+          text="Two Bodies Rotation Animation" />
+  <Text fill="FIREBRICK" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="200.0">
+    <font>
+      <Font name="Calibri" size="20.0" />
+    </font>
+  </Text>
+</VBox>

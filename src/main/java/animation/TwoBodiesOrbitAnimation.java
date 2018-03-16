@@ -2,6 +2,7 @@ package animation;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -17,7 +18,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.Form;
-import utils.Material;
+import model.Material;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +30,7 @@ import static java.lang.Double.parseDouble;
 
 /**
  * Created by Maxim Tarasov on 06.12.2016.
+ *
  */
 public class TwoBodiesOrbitAnimation {
 
@@ -199,8 +201,8 @@ public class TwoBodiesOrbitAnimation {
         }
 
         Duration duration = Duration.millis(10);
-        EventHandler onFinished = t -> {
-//                i = 0;
+        EventHandler<ActionEvent> onFinished = t -> {
+//                qw = 0;
             stack.setTranslateX((x1.get(j) + x2.get(j)) / 2000);
             stack.setTranslateY((y1.get(j) + y2.get(j)) / 2000);
             stack.setTranslateZ((z1.get(j) + z2.get(j)) / 2000);

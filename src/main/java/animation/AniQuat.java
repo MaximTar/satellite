@@ -1,10 +1,9 @@
 package animation;
-
 /**
  * Created by Maxim Tarasov on 12.10.2016.
  */
 
-import javafx.animation.Animation;
+import model.Material;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -24,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -94,7 +92,7 @@ public class AniQuat extends Application {
         labelHb.getChildren().add(label);
 
         // Buttons
-        Button btn1 = new Button("Choose a file...");
+        Button btn1 = new Button("Choose area file...");
         btn1.setOnAction(new SingleFcButtonListener());
         HBox buttonHb1 = new HBox(10);
         buttonHb1.setAlignment(Pos.CENTER);
@@ -260,12 +258,12 @@ public class AniQuat extends Application {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//        for (int j = 0; j < list.size() - 2; j++) {
-//            String[] partsOrigin = list.get(j).split("\\t\\t\\t");
+//        for (int qx = 0; qx < list.size() - 2; qx++) {
+//            String[] partsOrigin = list.get(qx).split("\\t\\t\\t");
 //            Point3D origin = new Point3D(Double.parseDouble(partsOrigin[0]) / 1000, Double.parseDouble(partsOrigin[1]) / 1000,
 //                    Double.parseDouble(partsOrigin[2]) / 1000);
-//            j++;
-//            String[] partsTarget = list.get(j).split("\\t\\t\\t");
+//            qx++;
+//            String[] partsTarget = list.get(qx).split("\\t\\t\\t");
 //            Point3D target = new Point3D(Double.parseDouble(partsTarget[0]) / 1000, Double.parseDouble(partsTarget[1]) / 1000,
 //                    Double.parseDouble(partsTarget[2]) / 1000);
 //            Cylinder line = createConnection(origin, target);
@@ -305,7 +303,7 @@ public class AniQuat extends Application {
 
         Duration duration = Duration.millis(5);
         EventHandler onFinished = t -> {
-//            j = 1;
+//            qx = 1;
             double qw = qi.get(j);
             double qx = qj.get(j);
             double qy = qk.get(j);
@@ -316,17 +314,15 @@ public class AniQuat extends Application {
 //            first = Quaternion.conjugate(first);
 //            System.out.println("!!!");
 //            System.out.println(first);
-            List rECI = new ArrayList<>();
-            Collections.addAll(rECI, x.get(j), y.get(j), z.get(j));
-            List vECI = new ArrayList<>();
-            Collections.addAll(vECI, vx.get(j), vy.get(j), vz.get(j));
+            double[] rECI = new double[]{x.get(j), y.get(j), z.get(j)};
+            double[] vECI = new double[]{vx.get(j), vy.get(j), vz.get(j)};
 
-            List<Double> zNew = VectorsAlgebra.invert(VectorsAlgebra.normalize(rECI));
-            List<Double> yNew = VectorsAlgebra.normalize(VectorsAlgebra.multV(zNew, vECI));
-            List<Double> xNew = VectorsAlgebra.multV(yNew, zNew);
+            double[] zNew = VectorAlgebra.invert(VectorAlgebra.normalize(rECI));
+            double[] yNew = VectorAlgebra.normalize(VectorAlgebra.multV(zNew, vECI));
+            double[] xNew = VectorAlgebra.multV(yNew, zNew);
 
-            Quaternion second = Quaternion.fromRotationMatrix(xNew.get(0), xNew.get(1), xNew.get(2), yNew.get(0),
-                    yNew.get(1), yNew.get(2), zNew.get(0), zNew.get(1), zNew.get(2));
+            Quaternion second = Quaternion.fromRotationMatrix(xNew[0], xNew[1], xNew[2], yNew[0],
+                    yNew[1], yNew[2], zNew[0], zNew[1], zNew[2]);
             second = Quaternion.conjugate(second);
 //            System.out.println(second);
             second = Quaternion.normalize(second);
@@ -336,15 +332,15 @@ public class AniQuat extends Application {
 //            fin = Quaternion.normalize(fin);
 //            System.out.println(fin);
 
-//            qw = fin.i;
-//            qx = fin.j;
-//            qy = fin.k;
-//            qz = fin.l;
+//            qw = fin.qw;
+//            qx = fin.qx;
+//            qy = fin.qy;
+//            qz = fin.qz;
 
-            double qwa = second.i;
-            double qxa = second.j;
-            double qya = second.k;
-            double qza = second.l;
+            double qwa = second.qw;
+            double qxa = second.qx;
+            double qya = second.qy;
+            double qza = second.qz;
 
             double mod = Math.sqrt(qxa * qxa + qya * qya + qza * qza);
             Point3D pAxis = new Point3D(qxa / mod, qya / mod, qza / mod);
@@ -359,8 +355,8 @@ public class AniQuat extends Application {
             stack.setRotate(Math.toDegrees(angle));
 
             j++;
-//            if (j == qj.size()) {
-//                j = 0;
+//            if (qx == qj.size()) {
+//                qx = 0;
 //            }
         };
 

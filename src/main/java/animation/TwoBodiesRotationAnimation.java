@@ -1,20 +1,22 @@
 package animation;
-
 /**
  * Created by Maxim Tarasov on 07.12.2016.
  */
 
+import model.Material;
+import com.interactivemesh.jfx.importer.col.ColModelImporter;
+import com.interactivemesh.jfx.importer.tds.TdsModelImporter;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -24,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import static java.lang.Double.doubleToLongBits;
 import static java.lang.Double.parseDouble;
 
 public class TwoBodiesRotationAnimation {
@@ -32,6 +33,7 @@ public class TwoBodiesRotationAnimation {
     final static Group root = new Group();
     final static Group axisGroup = new Group();
     final static StackPane axisLVLH = new StackPane();
+    final static StackPane stackLine = new StackPane();
     final static Form world = new Form();
     final static PerspectiveCamera camera = new PerspectiveCamera(true);
     final static Form cameraForm = new Form();
@@ -73,8 +75,10 @@ public class TwoBodiesRotationAnimation {
     static List<Double> v2x = new ArrayList<>();
     static List<Double> v2y = new ArrayList<>();
     static List<Double> v2z = new ArrayList<>();
-    static double initStateSecondX = -25;
-    static double initStateSecondY = -50;
+    static double initStateSecondX = 5;
+//    static double initStateSecondX = -25;
+    static double initStateSecondY = 0;
+//    static double initStateSecondY = -50;
 
 
 
@@ -145,7 +149,8 @@ public class TwoBodiesRotationAnimation {
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis, xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
 //        axisLVLH.getChildren().addAll(xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
-        world.getChildren().add(axisGroup);
+        // !!!
+//        world.getChildren().add(axisGroup);
     }
 
     private static void buildSpace(Path path) {
@@ -155,19 +160,58 @@ public class TwoBodiesRotationAnimation {
 
         Form spaceForm = new Form();
 
-        Cylinder cylinder = new Cylinder(25.0, 100.0);
-        cylinder.setMaterial(whiteMaterial);
+//        Cylinder cylinder = new Cylinder(25.0, 100.0);
+        TdsModelImporter tds = new TdsModelImporter();
+        tds.read("C:/Users/Labcomp-1/Downloads/rocketModels/badWingsButWorks/Rocket.3ds");
+        Node[] cylinder2 = tds.getImport();
+        tds.close();
+        Group cylinder = new Group(cylinder2);
+
+//        cylinder.setMaterial(whiteMaterial);
 //        cylinder.setRotationAxis(Rotate.X_AXIS);
 //        cylinder.setRotate(90);
 //        cylinder.setRotationAxis(Rotate.Y_AXIS);
 //        cylinder.setRotate(90);
         cylinder.setRotationAxis(Rotate.Z_AXIS);
-        cylinder.setRotate(90);
+        cylinder.setRotate(-90);
+        cylinder.setTranslateY(-0.4);
+        cylinder.setTranslateZ(-0.5);
 
-        Cylinder cylinderSecondary = new Cylinder(25.0, 100.0);
-        cylinderSecondary.setMaterial(whiteMaterial);
+//        Cylinder cylinderSecondary = new Cylinder(25.0, 100.0);
+//        TdsModelImporter tds2 = new TdsModelImporter();
+//        tds2.read("C:/Users/Labcomp-1/Downloads/rocketModels/agenaNormStage/agena_carbajal.3ds");
+        ColModelImporter tds2 = new ColModelImporter();
+        tds2.read("C:/Users/Labcomp-1/Downloads/rocketModels/NormStageLadee.dae");
+        Node[] cylinder3 = tds2.getImport();
+        tds2.close();
+        Group cylinderSecondary = new Group(cylinder3);
+//        cylinderSecondary.setMaterial(whiteMaterial);
         cylinderSecondary.setRotationAxis(Rotate.Z_AXIS);
-        cylinderSecondary.setRotate(90);
+        cylinderSecondary.setRotate(50);
+        cylinderSecondary.setRotationAxis(Rotate.X_AXIS);
+        cylinderSecondary.setRotate(30);
+        cylinderSecondary.setTranslateY(-4);
+
+//        StlMeshImporter tds3 = new StlMeshImporter();
+//        tds3.read("C:/Users/Labcomp-1/Downloads/rocketModels/rope/rope.stl");
+//        Mesh cylinder4 = tds3.getImport();
+//        tds3.close();
+//        Group cylinderThird = new Group(new MeshView(cylinder4));
+//        cylinderSecondary.setMaterial(whiteMaterial);
+//        cylinderSecondary.setRotationAxis(Rotate.Y_AXIS);
+//        cylinderSecondary.setRotate(90);
+//        cylinderSecondary.setTranslateY(-4);
+
+        // TODO Костыль для конфы
+//        final Box line = new Box(2, 2, 200);
+        Cylinder line = new Cylinder(1, 200);
+        line.setRotationAxis(Rotate.Z_AXIS);
+        line.setRotate(90);
+        line.setTranslateX(100);
+        line.setTranslateY(-100);
+        line.setMaterial(new Material(Color.YELLOW));
+        stackLine.getChildren().addAll(line);
+        spaceGroup.getChildren().add(stackLine);
 
 //        final Box pivotY = new Box(1, 300, 1);
         final Box pivotZ = new Box(1, 1, 300);
@@ -178,10 +222,12 @@ public class TwoBodiesRotationAnimation {
 
         final StackPane stack = new StackPane();
         final StackPane stackSecondary = new StackPane();
+        final StackPane stackThird = new StackPane();
 //        stack.getChildren().addAll(cylinder, pivotY);
 //        stack.getChildren().addAll(cylinder, pivotZ);
         stack.getChildren().addAll(cylinder);
         stackSecondary.getChildren().addAll(cylinderSecondary);
+//        stackThird.getChildren().addAll(cylinderThird);
 
         Material redMaterial = new Material(Color.RED);
         Material greenMaterial = new Material(Color.GREEN);
@@ -189,25 +235,47 @@ public class TwoBodiesRotationAnimation {
         final Box LVLHX = new Box(3600, 1, 1);
         final Box LVLHY = new Box(1, 3600, 1);
         final Box LVLHZ = new Box(1, 1, 3600);
+//        final Box LVLHline = new Box(4, 4, 210);
+        Cylinder LVLHline = new Cylinder(2, 210);
+        LVLHline.setTranslateZ(-100);
+        LVLHline.setRotationAxis(Rotate.X_AXIS);
+        LVLHline.setRotate(90);
+        LVLHline.setMaterial(new Material(Color.YELLOW));
         LVLHX.setMaterial(redMaterial);
         LVLHY.setMaterial(greenMaterial);
         LVLHZ.setMaterial(blueMaterial);
-        axisLVLH.getChildren().addAll(LVLHX, LVLHY, LVLHZ);
+        axisLVLH.getChildren().addAll(LVLHX, LVLHY, LVLHZ, LVLHline);
 
         spaceGroup.getChildren().add(stack);
         spaceGroup.getChildren().add(stackSecondary);
+        spaceGroup.getChildren().add(stackThird);
 
         axisLVLH.setTranslateX(-1800);
         axisLVLH.setTranslateY(-1800);
-        spaceGroup.getChildren().add(axisLVLH);
+        // !!!
+//        spaceGroup.getChildren().add(axisLVLH);
 
         world.getChildren().addAll(spaceGroup);
 
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        stack.setTranslateX(-25);
-        stack.setTranslateY(-50);
+//        stack.setTranslateX(-25);
+//        stack.setTranslateY(-50);
+        stack.setScaleX(10);
+        stack.setScaleY(10);
+        stack.setScaleZ(10);
+        stackSecondary.setScaleX(2);
+        stackSecondary.setScaleY(3);
+        stackSecondary.setScaleZ(2);
+        stackThird.setScaleX(10);
+        stackThird.setScaleY(10);
+        stackThird.setScaleZ(10);
+        stackThird.setTranslateX(108);
+        stackThird.setTranslateY(-21);
+        stackThird.setTranslateZ(-4);
+        stackThird.setRotationAxis(Rotate.X_AXIS);
+        stackThird.setRotate(45);
         stackSecondary.setTranslateX(initStateSecondX);
         stackSecondary.setTranslateY(initStateSecondY);
         // For pivotY
@@ -247,7 +315,7 @@ public class TwoBodiesRotationAnimation {
 
         Duration duration = Duration.millis(5);
         EventHandler onFinished = t -> {
-//            j = 1;
+            j = 1;
             double q1w = q1i.get(j);
             double q1x = q1j.get(j);
             double q1y = q1k.get(j);
@@ -260,29 +328,35 @@ public class TwoBodiesRotationAnimation {
 
             Quaternion first1 = new Quaternion(q1w, q1x, q1y, q1z);
             first1 = Quaternion.normalize(first1);
-            List r1ECI = new ArrayList<>();
-            Collections.addAll(r1ECI, x1.get(j), y1.get(j), z1.get(j));
-            List v1ECI = new ArrayList<>();
-            Collections.addAll(v1ECI, v1x.get(j), v1y.get(j), v1z.get(j));
+            double[] r1ECI = new double[]{x1.get(j), y1.get(j), z1.get(j)};
+            double[] v1ECI = new double[]{v1x.get(j), v1y.get(j), v1z.get(j)};
 
-            List<Double> z1New = VectorsAlgebra.invert(VectorsAlgebra.normalize(r1ECI));
-            List<Double> y1New = VectorsAlgebra.normalize(VectorsAlgebra.multV(z1New, v1ECI));
-            List<Double> x1New = VectorsAlgebra.multV(y1New, z1New);
+            double[] z1New = VectorAlgebra.invert(VectorAlgebra.normalize(r1ECI));
+            double[] y1New = VectorAlgebra.normalize(VectorAlgebra.multV(z1New, v1ECI));
+            double[] x1New = VectorAlgebra.multV(y1New, z1New);
 
-            Quaternion second1 = Quaternion.fromRotationMatrix(x1New.get(0), x1New.get(1), x1New.get(2), y1New.get(0),
-                    y1New.get(1), y1New.get(2), z1New.get(0), z1New.get(1), z1New.get(2));
+            Quaternion second1 = Quaternion.fromRotationMatrix(x1New[0], x1New[1], x1New[2], y1New[0],
+                    y1New[1], y1New[2], z1New[0], z1New[1], z1New[2]);
             second1 = Quaternion.conjugate(second1);
             second1 = Quaternion.normalize(second1);
 
-            double qwa = second1.i;
-            double qxa = second1.j;
-            double qya = second1.k;
-            double qza = second1.l;
+            double qwa = second1.qw;
+            double qxa = second1.qx;
+            double qya = second1.qy;
+            double qza = second1.qz;
 
             double mod = Math.sqrt(qxa * qxa + qya * qya + qza * qza);
             Point3D pAxis = new Point3D(qxa / mod, qya / mod, qza / mod);
             double angleAxis = 2 * Math.acos(qwa);
+//            System.out.println("!");
+//            System.out.println(pAxis);
+//            System.out.println(angleAxis);
             axisLVLH.setRotationAxis(pAxis);
+//            stackLine.setTranslateX(100);
+//            stackLine.setRotationAxis(Rotate.Y_AXIS);
+//            stackLine.setRotate(90);
+//            stackLine.setRotationAxis(pAxis);
+//            stackLine.setRotate(Math.toDegrees(angleAxis));
             axisLVLH.setRotate(Math.toDegrees(angleAxis));
 
             double abs1 = Math.sqrt(q1x * q1x + q1y * q1y + q1z * q1z);
@@ -294,24 +368,33 @@ public class TwoBodiesRotationAnimation {
             double dx = x2.get(j) - x1.get(j);
             double dy = y2.get(j) - y1.get(j);
             double dz = z2.get(j) - z1.get(j);
-            System.out.println('!');
-            System.out.println(dx);
-            System.out.println(dy);
-            System.out.println(dz);
+
+//            System.out.println("!!!");
+//            System.out.println(y1.get(qx));
+//            System.out.println(y2.get(qx));
+//            System.out.println(dy);
+//            System.out.println(z1.get(qx));
+//            System.out.println(z2.get(qx));
+//            System.out.println(dz);
+//            System.out.println('!');
+//            System.out.println(dx);
+//            System.out.println(dy);
+//            System.out.println(dz);
 
             double abs2 = Math.sqrt(q2x * q2x + q2y * q2y + q2z * q2z);
-            Point3D p2 = new Point3D(q2x / abs2, q2y / abs2, q2z / abs2);
+//            Point3D p2 = new Point3D(q2x / abs2, q2y / abs2, q2z / abs2);
             double angle2 = 2 * Math.acos(q2w);
             stackSecondary.setTranslateX(dx + initStateSecondX);
             stackSecondary.setTranslateY(dy + initStateSecondY);
             stackSecondary.setTranslateZ(dz);
-            stackSecondary.setRotationAxis(p2);
+//            stackSecondary.setRotationAxis(p2);
+            stackSecondary.setRotationAxis(p1);
             stackSecondary.setRotate(Math.toDegrees(angle2));
 
             j++;
-//            if (j == qj.size()) {
-//                j = 0;
-//            }
+            if (j == q1i.size()) {
+                j = 0;
+            }
         };
 
         KeyFrame keyFrame = new KeyFrame(duration, onFinished);

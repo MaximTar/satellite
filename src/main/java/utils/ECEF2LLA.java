@@ -1,16 +1,15 @@
 package utils;
 
+import org.apache.commons.math3.util.FastMath;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Maxim Tarasov on 19.09.2016.
- * <p>
  * ECEF - Earth Centered Earth Fixed
- * <p>
- * LLA - Lat Lon Alt
- * <p>
+ * LLA - Latitude Longitude Altitude
  * ported from matlab code at
  * https://gist.github.com/1536054
  * and
@@ -18,20 +17,21 @@ import java.util.List;
  */
 public class ECEF2LLA {
 
-    public static List<Double> conversion(double x, double y, double z) {
+    // WGS84 ellipsoid constants
+    static final double a = 6378137; // radius
+    static final double e = 8.1819190842622E-2; // eccentricity
 
-        // WGS84 ellipsoid constants
-        final double a = 6378137; // radius
-        final double e = 8.1819190842622e-2;  // eccentricity
+    // TO NOT INIT MANY TIMES
+    static final double asq = Math.pow(a, 2);
+    static final double esq = Math.pow(e, 2);
+    static final double b = Math.sqrt(asq * (1 - esq));
+    static final double bsq = Math.pow(b, 2);
+    static final double ep = Math.sqrt((asq - bsq) / bsq);
 
-        final double asq = Math.pow(a, 2);
-        final double esq = Math.pow(e, 2);
+    public static List<Double> conversionList(double x, double y, double z) {
         ArrayList<Double> result = new ArrayList<>();
 
-        double b = Math.sqrt(asq * (1 - esq));
-        double bsq = Math.pow(b, 2);
-        double ep = Math.sqrt((asq - bsq) / bsq);
-        double p = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double p = Math.sqrt(x * x + y * y);
         double th = Math.atan2(a * z, b * p);
 
         double lon = Math.atan2(y, x);
@@ -45,6 +45,33 @@ public class ECEF2LLA {
         // correction for altitude near poles left out.
 
         Collections.addAll(result, NumberUtils.r2d(lat), NumberUtils.r2d(lon), alt);
+
+        return result;
+    }
+
+    public static double[] conversion(double x, double y, double z) {
+        double[] result = new double[3];
+
+        double p = FastMath.sqrt(x * x + y * y);
+        double th = FastMath.atan2(a * z, b * p);
+
+        double sinTh = FastMath.sin(th);
+        double cosTh = FastMath.cos(th);
+
+        double lon = FastMath.atan2(y, x);
+        double lat = FastMath.atan2((z + ep * ep * b * sinTh * sinTh * sinTh), (p - esq * a * cosTh * cosTh * cosTh));
+        double sinLat = FastMath.sin(lat);
+        double N = a / (FastMath.sqrt(1 - esq * sinLat * sinLat));
+        double alt = p / FastMath.cos(lat) - N;
+
+        // mod lat to 0-2pi
+        lon = lon % (2 * FastMath.PI);
+
+        // correction for altitude near poles left out.
+
+        result[0] = NumberUtils.r2d(lat);
+        result[1] = NumberUtils.r2d(lon);
+        result[2] = alt;
 
         return result;
     }

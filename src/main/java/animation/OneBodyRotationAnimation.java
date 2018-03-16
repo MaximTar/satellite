@@ -1,24 +1,27 @@
 package animation;
-
 /**
  * Created by Maxim Tarasov on 12.10.2016.
  */
 
+import model.Material;
+import com.interactivemesh.jfx.importer.col.ColModelImporter;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,12 +34,13 @@ public class OneBodyRotationAnimation {
     final static Group root = new Group();
     final static Group axisGroup = new Group();
     final static StackPane axisLVLH = new StackPane();
+    final static StackPane stack = new StackPane();
     final static Form world = new Form();
     final static PerspectiveCamera camera = new PerspectiveCamera(true);
     final static Form cameraForm = new Form();
     final static Form cameraForm2 = new Form();
     final static Form cameraForm3 = new Form();
-    final static double cameraDistance = 2000;
+    final static double cameraDistance = 1000;
     final static Form spaceGroup = new Form();
     static double mousePosX;
     static double mousePosY;
@@ -56,7 +60,6 @@ public class OneBodyRotationAnimation {
     static List<Double> vx = new ArrayList<>();
     static List<Double> vy = new ArrayList<>();
     static List<Double> vz = new ArrayList<>();
-
 
 
     private static void buildScene() {
@@ -81,6 +84,7 @@ public class OneBodyRotationAnimation {
         Material redMaterial = new Material(Color.RED);
         Material greenMaterial = new Material(Color.GREEN);
         Material blueMaterial = new Material(Color.BLUE);
+        Material darkMaterial = new Material(Color.BLACK);
 
         final Box xAxis = new Box(370, 1, 1);
         final Box yAxis = new Box(1, 370, 1);
@@ -124,6 +128,14 @@ public class OneBodyRotationAnimation {
         yAxis.setMaterial(greenMaterial);
         zAxis.setMaterial(blueMaterial);
 
+        xLabel1.setMaterial(darkMaterial);
+        xLabel2.setMaterial(darkMaterial);
+        yLabel1.setMaterial(darkMaterial);
+        yLabel2.setMaterial(darkMaterial);
+        zLabel1.setMaterial(darkMaterial);
+        zLabel2.setMaterial(darkMaterial);
+        zLabel3.setMaterial(darkMaterial);
+
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis, xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
 //        axisLVLH.getChildren().addAll(xLabel1, xLabel2, yLabel1, yLabel2, zLabel1, zLabel2, zLabel3);
         world.getChildren().add(axisGroup);
@@ -134,32 +146,47 @@ public class OneBodyRotationAnimation {
         Material whiteMaterial = new Material(Color.WHITE);
         Material greyMaterial = new Material(Color.GREY);
 
-        Form spaceForm = new Form();
+//        Form spaceForm = new Form();
 
-        Cylinder cylinder = new Cylinder(50.0, 200.0);
-        cylinder.setMaterial(whiteMaterial);
-//        cylinder.setRotationAxis(Rotate.X_AXIS);
-//        cylinder.setRotate(90);
-//        cylinder.setRotationAxis(Rotate.Y_AXIS);
-//        cylinder.setRotate(90);
+        // TODO CYLINDER ADDED CHECK
+        ColModelImporter tds = new ColModelImporter();
+        tds.read("C:/Users/Labcomp-1/Downloads/rocketModels/NormStageLadee.dae");
+        Node[] cylinderImport = tds.getImport();
+        tds.close();
+        Group cylinder = new Group(cylinderImport);
         cylinder.setRotationAxis(Rotate.Z_AXIS);
         cylinder.setRotate(90);
 
-//        final Box pivotY = new Box(1, 300, 1);
+
+//        Cylinder cylinder = new Cylinder(50.0, 200.0);
+//        cylinder.setMaterial(whiteMaterial);
+////        cylinder.setRotationAxis(Rotate.X_AXIS);
+////        cylinder.setRotate(90);
+////        cylinder.setRotationAxis(Rotate.Y_AXIS);
+////        cylinder.setRotate(90);
+//        cylinder.setRotationAxis(Rotate.Z_AXIS);
+//        cylinder.setRotate(90);
+
+        final Box pivotX = new Box(300, 1, 1);
+        final Box pivotY = new Box(1, 300, 1);
         final Box pivotZ = new Box(1, 1, 300);
 //        pivotY.setMaterial(greyMaterial);
         pivotZ.setMaterial(greyMaterial);
 
-        spaceGroup.getChildren().add(spaceForm);
+//        spaceGroup.getChildren().add(spaceForm);
 
         final StackPane stack = new StackPane();
+        final StackPane pivotStack = new StackPane();
+//        stack.getChildren().addAll(cylinder, pivotX);
 //        stack.getChildren().addAll(cylinder, pivotY);
-        stack.getChildren().addAll(cylinder, pivotZ);
-//        stack.getChildren().addAll(cylinder);
+//        stack.getChildren().addAll(cylinder, pivotZ);
+        stack.getChildren().addAll(cylinder);
+        pivotStack.getChildren().addAll(pivotX);
 
         Material redMaterial = new Material(Color.RED);
         Material greenMaterial = new Material(Color.GREEN);
         Material blueMaterial = new Material(Color.BLUE);
+
         final Box LVLHX = new Box(360, 1, 1);
         final Box LVLHY = new Box(1, 360, 1);
         final Box LVLHZ = new Box(1, 1, 360);
@@ -169,20 +196,25 @@ public class OneBodyRotationAnimation {
         axisLVLH.getChildren().addAll(LVLHX, LVLHY, LVLHZ);
 
         spaceGroup.getChildren().add(stack);
+        spaceGroup.getChildren().add(pivotStack);
 
         axisLVLH.setTranslateX(-180);
         axisLVLH.setTranslateY(-180);
-        spaceGroup.getChildren().add(axisLVLH);
+//        spaceGroup.getChildren().add(axisLVLH);
 
         world.getChildren().addAll(spaceGroup);
 
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        stack.setTranslateX(-50);
-        stack.setTranslateY(-100);
-        // For pivotY
-//        stack.setTranslateY(-150);
+        // TRANSLATE FOR ROCKET STAGE
+        stack.setTranslateX(-19);
+        stack.setTranslateY(-32);
+        stack.setScaleX(2.5);
+        stack.setScaleY(2.5);
+        stack.setScaleZ(2.5);
+        // FOR PIVOT
+        pivotStack.setTranslateX(-150);
 
         try {
             list = Files.readAllLines(path);
@@ -207,8 +239,8 @@ public class OneBodyRotationAnimation {
         j++;
 
         Duration duration = Duration.millis(5);
-        EventHandler onFinished = t -> {
-//            j = 1;
+        EventHandler<ActionEvent> onFinished = t -> {
+//            qx = 1;
             double qw = qi.get(j);
             double qx = qj.get(j);
             double qy = qk.get(j);
@@ -216,24 +248,22 @@ public class OneBodyRotationAnimation {
 
             Quaternion first = new Quaternion(qw, qx, qy, qz);
             first = Quaternion.normalize(first);
-            List rECI = new ArrayList<>();
-            Collections.addAll(rECI, x.get(j), y.get(j), z.get(j));
-            List vECI = new ArrayList<>();
-            Collections.addAll(vECI, vx.get(j), vy.get(j), vz.get(j));
+            double[] rECI = new double[]{x.get(j), y.get(j), z.get(j)};
+            double[] vECI = new double[]{vx.get(j), vy.get(j), vz.get(j)};
 
-            List<Double> zNew = VectorsAlgebra.invert(VectorsAlgebra.normalize(rECI));
-            List<Double> yNew = VectorsAlgebra.normalize(VectorsAlgebra.multV(zNew, vECI));
-            List<Double> xNew = VectorsAlgebra.multV(yNew, zNew);
+            double[] zNew = VectorAlgebra.invert(VectorAlgebra.normalize(rECI));
+            double[] yNew = VectorAlgebra.normalize(VectorAlgebra.multV(zNew, vECI));
+            double[] xNew = VectorAlgebra.multV(yNew, zNew);
 
-            Quaternion second = Quaternion.fromRotationMatrix(xNew.get(0), xNew.get(1), xNew.get(2), yNew.get(0),
-                    yNew.get(1), yNew.get(2), zNew.get(0), zNew.get(1), zNew.get(2));
+            Quaternion second = Quaternion.fromRotationMatrix(xNew[0], xNew[1], xNew[2], yNew[0],
+                    yNew[1], yNew[2], zNew[0], zNew[1], zNew[2]);
             second = Quaternion.conjugate(second);
             second = Quaternion.normalize(second);
 
-            double qwa = second.i;
-            double qxa = second.j;
-            double qya = second.k;
-            double qza = second.l;
+            double qwa = second.qw;
+            double qxa = second.qx;
+            double qya = second.qy;
+            double qza = second.qz;
 
             double mod = Math.sqrt(qxa * qxa + qya * qya + qza * qza);
             Point3D pAxis = new Point3D(qxa / mod, qya / mod, qza / mod);
@@ -246,10 +276,14 @@ public class OneBodyRotationAnimation {
             double angle = 2 * Math.acos(qw);
             stack.setRotationAxis(p);
             stack.setRotate(Math.toDegrees(angle));
+            pivotStack.setRotationAxis(p);
+            pivotStack.setRotate(Math.toDegrees(angle));
 
             j++;
-//            if (j == qj.size()) {
-//                j = 0;
+
+//            System.out.println(stack.getChildren());
+//            if (qx == qj.size()) {
+//                qx = 0;
 //            }
         };
 

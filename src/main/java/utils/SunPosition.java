@@ -25,10 +25,16 @@ public class SunPosition {
             Y = Y - 1;
             M = M + 12;
         }
-        double JY = 365.25 * Y;
+
+        int A = (int) (Y / 100);
+        double B = 2 - A + (int) (A / 4);
+
+//        double JY = 365.25 * Y;
+        double JY = 365.25 * (Y + 4716);
         double JM = 30.6001 * (M + 1);
 
-        return (int) JY + (int) JM + D + H / 24 + 1720981.5;
+//        return (int) JY + (int) JM + D + H / 24 + 1720981.5;
+        return (int) JY + (int) JM + D + H / 24 + B - 1524.5;
     }
 
     public static ArrayList<Double> sunPosition(Calendar c) {

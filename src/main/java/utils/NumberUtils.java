@@ -2,33 +2,21 @@ package utils;
 
 import javafx.scene.control.TextField;
 
+import java.util.Objects;
+
 public class NumberUtils {
 
-    public static boolean isDouble(TextField input, String message) {
-        if (input != null) {
-            try {
-                final double d = Double.parseDouble(input.getText());
-            } catch (NumberFormatException e) {
-                System.err.println("Error: '" + message + "' is not a number");
+    public static boolean textFieldsAreDouble(TextField... inputs) {
+        for (TextField input : inputs) {
+            if (Objects.isNull(input) || !org.apache.commons.lang3.math.NumberUtils.isParsable(input.getText())) {
                 return false;
             }
-            return true;
-        } else {
-            throw new IllegalArgumentException("You don't initialize input = null");
         }
+
+        return true;
     }
 
-    public static boolean textFieldsAreDouble(TextField input1, TextField input2, TextField input3, TextField input4,
-                                              TextField input5, TextField input6, TextField input7, TextField input8,
-                                              TextField input9) {
-        return NumberUtils.isDouble(input1, input1.getText()) && NumberUtils.isDouble(input2, input2.getText())
-                && NumberUtils.isDouble(input3, input3.getText()) && NumberUtils.isDouble(input4, input4.getText())
-                && NumberUtils.isDouble(input5, input5.getText()) && NumberUtils.isDouble(input6, input6.getText())
-                && NumberUtils.isDouble(input7, input7.getText()) && NumberUtils.isDouble(input8, input8.getText())
-                && NumberUtils.isDouble(input9, input9.getText());
-    }
-
-    public static double parseTextAsDouble (TextField input) {
+    public static double parseTextAsDouble(TextField input) {
         return Double.parseDouble(input.getText());
     }
 
@@ -41,7 +29,7 @@ public class NumberUtils {
         return (double) tmp / factor;
     }
 
-    public static double checkResultAngle (double angle) {
+    public static double checkResultAngle(double angle) {
         if (angle <= 0) {
             while (angle <= 0) {
                 angle += 360;
@@ -61,4 +49,6 @@ public class NumberUtils {
     public static double r2d(double rad) {
         return Math.toDegrees(rad);
     }
+
+//    public static double pointLineDistance ()
 }

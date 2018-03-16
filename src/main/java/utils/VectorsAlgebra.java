@@ -18,10 +18,27 @@ public class VectorsAlgebra {
         return Math.sqrt(abs);
     }
 
+    public static double absoluteValue(double[] r) {
+        double abs = 0;
+        for (Double i : r) {
+            abs += i * i;
+        }
+        return Math.sqrt(abs);
+    }
+
     public static List<Double> normalize(List<Double> r) {
         List<Double> norm = new ArrayList<>();
         double abs = absoluteValue(r);
         norm.addAll(r.stream().map(i -> i / abs).collect(Collectors.toList()));
+        return norm;
+    }
+
+    public static double[] normalize(double[] r) {
+        double[] norm = new double[3];
+        double abs = absoluteValue(r);
+        for (int i = 0; i < r.length; i++) {
+            norm[i] = r[i] / abs;
+        }
         return norm;
     }
 
@@ -34,8 +51,25 @@ public class VectorsAlgebra {
         return r_diff;
     }
 
+    public static double[] difference(double[] r1, double[] r2) {
+        double[] r_diff = new double[3];
+        assert r1.length == r2.length;
+        for (int i = 0; i < r1.length; i++) {
+            r_diff[i] = r1[i] - r2[i];
+        }
+        return r_diff;
+    }
+
     public static List<Double> constMult(double c, List<Double> r) {
         return r.stream().map(i -> i * c).collect(Collectors.toList());
+    }
+
+    public static double[] constMult(double c, double[] r) {
+        double[] cm = new double[3];
+        for (int i = 0; i < r.length; i++) {
+            cm[i] = r[i] * c;
+        }
+        return cm;
     }
 
     public static List<Double> multV(List<Double> a, List<Double> b) {
@@ -52,13 +86,13 @@ public class VectorsAlgebra {
         return a.get(0) * b.get(0) + a.get(1) * b.get(1) + a.get(2) * b.get(2);
     }
 
-    public static List<Double> sum (List<Double> a, List<Double> b) {
+    public static List<Double> sum(List<Double> a, List<Double> b) {
         List<Double> c = new ArrayList<>();
         Collections.addAll(c, a.get(0) + b.get(0), a.get(1) + b.get(1), a.get(2) + b.get(2));
         return c;
     }
 
-    public static List<Double> invert (List<Double> a) {
+    public static List<Double> invert(List<Double> a) {
         return a.stream().map(anA -> -anA).collect(Collectors.toList());
     }
 }
