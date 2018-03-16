@@ -13,12 +13,10 @@ package utils;
  * updated releases of this package.
  */
 
-//import jat.forces.nrlmsise.NRLMSISE_data; // todo Fix
-//import jat.spacecraft.Spacecraft;
-import java.lang.Math;
 import java.util.*;
 
-import static utils.Matrix.*;
+import static utils.Matrix.matrixMult;
+import static utils.Matrix.transpose;
 
 /**
  * NRLMSISE drag model.  Translated from area code written in c, originally
