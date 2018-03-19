@@ -1,84 +1,130 @@
-package calculation;
+package controller;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import utils.*;
 import javafx.application.Application;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.orekit.errors.OrekitException;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 
-public class Main extends Application {
+public class MainCalculation extends Application {
 
-    Stage mainWindow, convertWindow;
+    private static Stage stage;
+    private final String CALCULATION_FIRST_VIEW_PATH = "/fxml/calculationFirstView.fxml";
+    private static Logger LOGGER = Logger.getLogger(MainCalculation.class.getName());
+    private static FileHandler fileHandler;
     Scene startScene, startCoordinateOneScene, startCoordinateTwoScene, startKeplerScene;
     Button startCoordinateButtonOneBody, startKeplerButton, startCoordinateButtonTwoBody;
 
+    static {
+        try {
+            fileHandler = new FileHandler("log.log");
+        } catch (IOException e) {
+            // todo handle
+            e.printStackTrace();
+        }
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        LOGGER.setUseParentHandlers(false);
+        FileHandler fh = fileHandler;
+        LOGGER.addHandler(fh);
+    }
+
+    private void setFirstView(FXMLLoader loader, Stage stage) {
+        Parent root;
+        try {
+            root = loader.load();
+            stage.setTitle("");
+            stage.setScene(new Scene(root, 300, 300));
+            stage.show();
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "IOException while loading FXMLLoader. StackTrace: "
+                    + Arrays.toString(e.getStackTrace()));
+        }
+    }
+
     @Override
     public void start(Stage stage) {
-        mainWindow = stage;
-        convertWindow = stage;
-        mainWindow.setTitle("Program");
-        convertWindow.setTitle("Calculation/Conversion");
+        MainCalculation.stage = stage;
 
-        GridPane gridStart = new GridPane();
-        gridStart.setPadding(new Insets(15, 15, 15, 15));
-        gridStart.setVgap(15);
-        gridStart.setHgap(8);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(CALCULATION_FIRST_VIEW_PATH));
+        setFirstView(loader, stage);
 
-        startCoordinateButtonOneBody = new Button("One Body Coordinate View");
-        GridPane.setConstraints(startCoordinateButtonOneBody, 4, 1);
-        GridPane.setHalignment(startCoordinateButtonOneBody, HPos.CENTER);
 
-        CoordinatePaneOneBody gridCoordinateOne = new CoordinatePaneOneBody(mainWindow);
-        startCoordinateButtonOneBody.setOnAction(event -> {
-            startCoordinateOneScene = new Scene(gridCoordinateOne, 780, 490);
-            mainWindow.setScene(startCoordinateOneScene);
-            Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-            mainWindow.setX((primScreenBounds.getWidth() - mainWindow.getWidth()) / 2);
-            mainWindow.setY((primScreenBounds.getHeight() - mainWindow.getHeight()) / 2);
-            mainWindow.show();
-        });
 
-        startCoordinateButtonTwoBody = new Button("Two Bodies Coordinate View");
-        GridPane.setConstraints(startCoordinateButtonTwoBody, 4, 2);
-        GridPane.setHalignment(startCoordinateButtonTwoBody, HPos.CENTER);
-
-        CoordinatePaneTwoBody gridCoordinateTwo = new CoordinatePaneTwoBody(mainWindow);
-        startCoordinateButtonTwoBody.setOnAction(event -> {
-            startCoordinateTwoScene = new Scene(gridCoordinateTwo, 1145, 445);
-            mainWindow.setScene(startCoordinateTwoScene);
-            Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-            mainWindow.setX((primScreenBounds.getWidth() - mainWindow.getWidth()) / 2);
-            mainWindow.setY((primScreenBounds.getHeight() - mainWindow.getHeight()) / 2);
-            mainWindow.show();
-        });
-
-        startKeplerButton = new Button("Kepler View");
-        GridPane.setConstraints(startKeplerButton, 4, 3);
-        GridPane.setHalignment(startKeplerButton, HPos.CENTER);
-
-        // TODO KEPLER
-//        KeplerPane gridKepler = new KeplerPane(mainWindow);
-//        startKeplerButton.setOnAction(event -> {
-//            startKeplerScene = new Scene(gridKepler, 620, 250);
-//            mainWindow.setScene(startKeplerScene);
-//            mainWindow.show();
+//
+////        convertWindow = stage;
+//        stage.setTitle("Program");
+////        convertWindow.setTitle("Calculation/Conversion");
+//
+//        GridPane gridStart = new GridPane();
+//        gridStart.setPadding(new Insets(15, 15, 15, 15));
+//        gridStart.setVgap(15);
+//        gridStart.setHgap(8);
+//
+//        startCoordinateButtonOneBody = new Button("One Body Coordinate View");
+//        GridPane.setConstraints(startCoordinateButtonOneBody, 4, 1);
+//        GridPane.setHalignment(startCoordinateButtonOneBody, HPos.CENTER);
+//
+//        CoordinatePaneOneBody gridCoordinateOne = new CoordinatePaneOneBody(stage);
+//        startCoordinateButtonOneBody.setOnAction(event -> {
+//            startCoordinateOneScene = new Scene(gridCoordinateOne, 780, 490);
+//            stage.setScene(startCoordinateOneScene);
+//            Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+//            stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
+//            stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
+//            stage.show();
 //        });
+//
+//        startCoordinateButtonTwoBody = new Button("Two Bodies Coordinate View");
+//        GridPane.setConstraints(startCoordinateButtonTwoBody, 4, 2);
+//        GridPane.setHalignment(startCoordinateButtonTwoBody, HPos.CENTER);
+//
+//        CoordinatePaneTwoBody gridCoordinateTwo = new CoordinatePaneTwoBody(stage);
+//        startCoordinateButtonTwoBody.setOnAction(event -> {
+//            startCoordinateTwoScene = new Scene(gridCoordinateTwo, 1145, 445);
+//            stage.setScene(startCoordinateTwoScene);
+//            Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+//            stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
+//            stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
+//            stage.show();
+//        });
+//
+//        startKeplerButton = new Button("Kepler View");
+//        GridPane.setConstraints(startKeplerButton, 4, 3);
+//        GridPane.setHalignment(startKeplerButton, HPos.CENTER);
+//
+//        // TODO KEPLER
+////        KeplerPane gridKepler = new KeplerPane(stage);
+////        startKeplerButton.setOnAction(event -> {
+////            startKeplerScene = new Scene(gridKepler, 620, 250);
+////            stage.setScene(startKeplerScene);
+////            stage.show();
+////        });
+//
+//        gridStart.getChildren().addAll(startCoordinateButtonOneBody, startCoordinateButtonTwoBody, startKeplerButton);
+//
+//        startScene = new Scene(gridStart, 250, 170);
+//        stage.setResizable(false);
+//        stage.setScene(startScene);
+//        stage.show();
 
-        gridStart.getChildren().addAll(startCoordinateButtonOneBody, startCoordinateButtonTwoBody, startKeplerButton);
 
-        startScene = new Scene(gridStart, 250, 170);
-        mainWindow.setResizable(false);
-        mainWindow.setScene(startScene);
-        mainWindow.show();
+
+
+
+
+
 
         // CHECK ECEF-ECI
 //        ArrayList<ArrayList<Double>> area = new ArrayList<>();
@@ -644,5 +690,13 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static Stage getStage() {
+        return stage;
+    }
+
+    public static void setStage(Stage stage) {
+        MainCalculation.stage = stage;
     }
 }

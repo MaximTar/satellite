@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.web.WebView?>
+<!--TODO comb out appearance-->
+<VBox fx:controller="controller.CalculationOneBodyController"
+      xmlns:fx="http://javafx.com/fxml" alignment="center"
+      styleClass="root" spacing="20">
+    <!--<padding>-->
+    <!--<Insets top="25" right="25" bottom="25" left="25"/>-->
+    <!--</padding>-->
+
+    <HBox spacing="10" alignment="CENTER">
+        <VBox>
+            <WebView fx:id="t0" maxWidth="50" maxHeight="40" minHeight="40"/>
+            <WebView fx:id="dt" maxWidth="50" maxHeight="40" minHeight="40"/>
+            <WebView fx:id="tMax" maxWidth="50" maxHeight="40" minHeight="40"/>
+        </VBox>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="5" bottom="10"/>
+            </padding>
+            <TextField fx:id="t0Input" text="0" minWidth="200"/>
+            <TextField fx:id="dtInput" text="1" minWidth="200"/>
+            <TextField fx:id="tMaxInput" text="10000" minWidth="200"/>
+        </VBox>
+        <VBox>
+            <WebView fx:id="Vx0" maxWidth="50" maxHeight="40" minHeight="40"/>
+            <WebView fx:id="Vy0" maxWidth="50" maxHeight="40" minHeight="40"/>
+            <WebView fx:id="Vz0" maxWidth="50" maxHeight="40" minHeight="40"/>
+        </VBox>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="5" bottom="10"/>
+            </padding>
+            <TextField fx:id="Vx0Input" text="0.0" minWidth="200"/>
+            <TextField fx:id="Vy0Input" text="7713.0" minWidth="200"/>
+            <TextField fx:id="Vz0Input" text="0.0" minWidth="200"/>
+        </VBox>
+        <VBox>
+            <WebView fx:id="x0" maxWidth="50" maxHeight="40" minHeight="40"/>
+            <WebView fx:id="y0" maxWidth="50" maxHeight="40" minHeight="40"/>
+            <WebView fx:id="z0" maxWidth="50" maxHeight="40" minHeight="40"/>
+        </VBox>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="5" bottom="10"/>
+            </padding>
+            <TextField fx:id="x0Input" text="6700000.0" minWidth="200"/>
+            <TextField fx:id="y0Input" text="0.0" minWidth="200"/>
+            <TextField fx:id="z0Input" text="0.0" minWidth="200"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="20" alignment="CENTER">
+        <fx:define>
+            <ToggleGroup fx:id="groupInitOrbit"/>
+        </fx:define>
+        <RadioButton fx:id="radioISS" text="ISS" toggleGroup="$groupInitOrbit"/>
+        <RadioButton fx:id="radioSunSync" text="Sun-Sync" toggleGroup="$groupInitOrbit"/>
+        <RadioButton fx:id="radioGPS" text="GPS" toggleGroup="$groupInitOrbit"/>
+        <RadioButton fx:id="radioMolniya" text="Molniya" toggleGroup="$groupInitOrbit"/>
+        <RadioButton fx:id="radioGEO" text="GEO" toggleGroup="$groupInitOrbit"/>
+        <RadioButton fx:id="radioExp" text="Experimental" toggleGroup="$groupInitOrbit"/>
+        <RadioButton fx:id="radioUserDef" text="User defined" toggleGroup="$groupInitOrbit"/>
+    </HBox>
+
+    <Button text="Start" onAction="#handleStartButtonAction"/>
+
+    <HBox spacing="20" alignment="CENTER">
+        <CheckBox fx:id="checkBoxPrecession" text="Precession"
+                  onMouseClicked="#handlePrecessionCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxNutation" text="Nutation"
+                  onMouseClicked="#handleNutationCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxEarthRotation" text="Earth rotation"
+                  onMouseClicked="#handleEarthRotationCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxPolarMotion" text="Polar motion"
+                  onMouseClicked="#handlePolarMotionCheckBoxClicked"/>
+    </HBox>
+
+    <HBox spacing="5" alignment="CENTER">
+        <DatePicker fx:id="datePicker"/>
+
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <Label text="Hours:"/>
+        <Spinner fx:id="hourSpinner">
+            <valueFactory>
+                <SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="23"/>
+            </valueFactory>
+        </Spinner>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <Label text="Minutes:" />
+        <Spinner fx:id="minuteSpinner">
+            <valueFactory>
+                <SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="59"/>
+            </valueFactory>
+        </Spinner>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <Button fx:id="convertToEcefButton" text="Convert to ECEF" onAction="#handleConvertToEcefButtonAction"/>
+    </HBox>
+
+    <HBox spacing="5" alignment="CENTER">
+        <WebView fx:id="jxx" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="jxxInput" text="10.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="jyy" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="jyyInput" text="100.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="jzz" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="jzzInput" text="100.0" minWidth="100"/>
+    </HBox>
+
+    <HBox spacing="5" alignment="CENTER">
+        <WebView fx:id="qw" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="qwInput" text="1.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="qx" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="qxInput" text="0.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="qy" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="qyInput" text="0.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="qz" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="qzInput" text="0.0" minWidth="100"/>
+    </HBox>
+
+    <HBox spacing="5" alignment="CENTER">
+        <WebView fx:id="wx" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="wxInput" text="0.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="wy" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="wyInput" text="0.0" minWidth="100"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <WebView fx:id="wz" maxWidth="50" maxHeight="40" minHeight="40"/>
+        <TextField fx:id="wzInput" text="0.00115" minWidth="100"/>
+    </HBox>
+
+    <HBox spacing="20" alignment="CENTER">
+        <CheckBox fx:id="checkBoxGeopotential" text="Geopotential"
+                  onMouseClicked="#handleGeopotentialCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxSunsGravity" text="Sun's gravity"
+                  onMouseClicked="#handleSunsGravityCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxMoonsGravity" text="Moon's gravity"
+                  onMouseClicked="#handleMoonsGravityCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxSunsRadiationPressure" text="Sun's radiation pressure"
+                  onMouseClicked="#handleSunsRadiationPressureCheckBoxClicked"/>
+        <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+        <CheckBox fx:id="checkBoxAtmosphericDrag" text="Atmospheric drag"
+                  onMouseClicked="#handleAtmosphericDragCheckBoxClicked"/>
+    </HBox>
+
+    <!--<HBox GridPane.hgrow="ALWAYS" GridPane.columnIndex="0" GridPane.rowIndex="2">-->
+    <!--<Button text="Return to menu" onAction="#handleReturnButtonAction" prefWidth="140"/>-->
+    <!--<Region prefWidth="-Infinity" HBox.hgrow="ALWAYS"/>-->
+    <!--<Button text="Export to CSV" onAction="#handleExportButtonAction" prefWidth="140"/>-->
+    <!--</HBox>-->
+
+</VBox>

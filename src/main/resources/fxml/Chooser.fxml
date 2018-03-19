@@ -4,9 +4,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<!--suppress JavaFxUnresolvedFxIdReference -->
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="280.0" prefWidth="300.0" spacing="10.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
-      fx:controller="com.github.qcha.animation.ChooserController">
+      fx:controller="animation.ChooserController">
   <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" prefHeight="24.0" prefWidth="147.0"
          text="Choose file to animate" textAlignment="CENTER" />
   <Button fx:id="btnOneBodyOrbit" mnemonicParsing="false" onAction="#oneBodyOrbitFileChooser" prefHeight="30.0" prefWidth="220.0"
